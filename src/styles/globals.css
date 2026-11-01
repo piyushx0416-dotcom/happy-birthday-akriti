@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #09080F;
+  --foreground: #F5F0E8;
+  --gold-primary: #D6BD8B;
+  --purple-deep: #171126;
+  --purple-royal: #30204D;
+  --lavender: #C5B2E8;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: #09080F;
+  color: #F5F0E8;
+  overflow-x: hidden;
+}
+
+body {
+  background-color: #09080F;
+  color: #F5F0E8;
+  font-family: var(--font-inter), sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Luxury Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #09080F;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(214, 189, 139, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(214, 189, 139, 0.5);
+}
+
+/* Selection Color */
+::selection {
+  background: rgba(214, 189, 139, 0.35);
+  color: #FFFFFF;
+}
+
+/* Luxury Glassmorphism Utilities */
+.glass-pill {
+  background: rgba(23, 17, 38, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(214, 189, 139, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-pill:hover {
+  border-color: rgba(214, 189, 139, 0.45);
+  box-shadow: 0 10px 40px 0 rgba(214, 189, 139, 0.15);
+}
+
+.glass-card {
+  background: rgba(23, 17, 38, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(214, 189, 139, 0.15);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.glass-card:hover {
+  border-color: rgba(214, 189, 139, 0.35);
+  box-shadow: 0 16px 48px rgba(214, 189, 139, 0.12);
+}
+
+/* Luxury Editorial Museum Panels (Referencing User Ref 1 Image) */
+.editorial-frame {
+  border: 1px solid rgba(214, 189, 139, 0.2);
+  background: linear-gradient(180deg, rgba(30, 22, 50, 0.35) 0%, rgba(15, 12, 25, 0.7) 100%);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.editorial-frame:hover {
+  border-color: rgba(214, 189, 139, 0.45);
+  transform: translateY(-4px);
+}
+
+/* Shimmer Effect for Gold Accents */
+.gold-text-shimmer {
+  background: linear-gradient(
+    90deg,
+    #D6BD8B 0%,
+    #FFF6E5 25%,
+    #D6BD8B 50%,
+    #AA8B4A 75%,
+    #D6BD8B 100%
+  );
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmer 8s linear infinite;
+}
+
+@keyframes shimmer {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
