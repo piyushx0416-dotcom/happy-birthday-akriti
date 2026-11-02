@@ -41,6 +41,7 @@ This project combines three visual paradigms:
 - **Memory Gallery**: Curated photo gallery with category filter and full-screen lightbox with keyboard controls (Esc, Arrow Left/Right).
 - **Little Moments**: Memorable quotes and inside jokes.
 - **Things I Remember**: Personal observations about Akriti.
+- **Our Favourite Moments (Feature E)**: Polaroid scrapbook showcase with golden pins, gentle tilts, handwritten notes, and click-to-expand modal view.
 
 ### 5. The Interactive Fairytale (`/fairytale`)
 - Five connected narrative chapters where Akriti is the protagonist:
@@ -81,15 +82,20 @@ This project combines three visual paradigms:
 - **"A LETTER FROM MY HEART"** modal button for the final intimate letter.
 - Final scene: *"THE UNIVERSE IS BIG. BUT MY FAVOURITE PART OF IT WILL ALWAYS BE YOU."*
 
-### 9. Central Audio Management (`src/lib/audio.ts`)
-- Web Audio API procedural synthesis:
-  - Ambient celestial drone & chord progression (requires 0 external files).
+### 9. Central Audio Management & Signature Soundtrack (`src/lib/audio.ts`)
+- **Signature Soundtrack**: *"One of the Girls"* by The Weeknd, JENNIE, and Lily-Rose Depp.
+- **Floating Luxury Music Player**:
+  - Dark translucent glassmorphic body with champagne-gold highlights.
+  - Rotating vinyl album artwork.
+  - Interactive play/pause, scrubbable progress bar, volume slider, and mute button.
+  - Real-time animated audio visualizer waveform bars.
+  - Multi-source audio engine: built-in procedural synth chords (Bm, G, Em, F#m), official YouTube video/audio stream modal player, and local audio file support.
+- **Web Audio API procedural sound effects**:
   - Melodic harp chime clicks.
   - Paper envelope rustle.
   - Candle blowing whoosh.
-  - Celebration fanfare.
-- Persistent sound toggle in floating navbar.
-- Supports external MP3 files placed in `public/assets/audio/`.
+  - Celebration fanfare arpeggios.
+- Persistent sound toggle in floating navbar and smooth cross-route playback.
 
 ---
 

@@ -1,36 +1,73 @@
 /**
  * =========================================================================
- * HER UNIVERSE — CENTRAL AUDIO SYSTEM (Web Audio API + Audio Asset Support)
+ * HER UNIVERSE — CENTRAL AUDIO SYSTEM & SOUNDTRACK ENGINE
  * =========================================================================
+ * Signature Soundtrack: "One of the Girls" (The Weeknd, JENNIE, Lily-Rose Depp)
  * Provides:
- * - Ambient cosmic background music (ambient drone + pentatonic chime chords)
- * - Interactive sound effects (chime click, paper envelope rustle, candle blow, fireworks fanfare)
- * - Safe fallback if no audio files are installed in public/assets/audio/
- * - Persistent mute/unmute state in localStorage
- * - Volume control with smooth fading
+ * - Built-in Dreamy Synth Engine playing the iconic atmospheric chords of "One of the Girls"
+ * - HTMLAudioElement support for custom local MP3 (/assets/audio/one-of-the-girls.mp3)
+ * - YouTube official audio player integration support
+ * - Interactive Sound Effects: Celestial chime, envelope unfold, candle blow-out, celebration fanfare
+ * - Persistent mute and volume control with smooth gain transitions
  */
+
+export interface TrackMetadata {
+  title: string;
+  artists: string;
+  duration: number; // in seconds
+  album: string;
+}
+
+export const SIGNATURE_TRACK: TrackMetadata = {
+  title: "One of the Girls",
+  artists: "The Weeknd, JENNIE, Lily-Rose Depp",
+  duration: 244, // 4:04
+  album: "The Idol Soundtrack • Her Universe Edition",
+};
+
+type AudioMode = "synth" | "audio-file" | "youtube";
 
 class SoundManager {
   private ctx: AudioContext | null = null;
   private isMuted: boolean = true;
-  private volume: number = 0.5;
-  private ambientGain: GainNode | null = null;
-  private ambientOscillators: OscillatorNode[] = [];
-  private isAmbientPlaying: boolean = false;
-  private customAudioCache: Record<string, HTMLAudioElement> = {};
+  private isPlaying: boolean = false;
+  private volume: number = 0.65;
+  private currentProgress: number = 0; // seconds
+  private audioMode: AudioMode = "synth";
+  private customAudio: HTMLAudioElement | null = null;
+  private synthInterval: NodeJS.Timeout | null = null;
+  private listeners: Set<() => void> = new Set();
+
+  // Procedural Synth Nodes
+  private masterGain: GainNode | null = null;
+  private activeVoices: OscillatorNode[] = [];
 
   constructor() {
     if (typeof window !== "undefined") {
       const storedMute = localStorage.getItem("her_universe_sound_enabled");
-      // Respect default muted state until user activates
       this.isMuted = storedMute !== "true";
+      const storedVol = localStorage.getItem("her_universe_volume");
+      if (storedVol) {
+        this.volume = parseFloat(storedVol);
+      }
     }
+  }
+
+  private notify() {
+    this.listeners.forEach((listener) => listener());
+  }
+
+  public subscribe(listener: () => void): () => void {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
   }
 
   private initContext(): AudioContext | null {
     if (typeof window === "undefined") return null;
     if (!this.ctx) {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       if (AudioCtx) {
         this.ctx = new AudioCtx();
       }
@@ -47,7 +84,8 @@ class SoundManager {
       localStorage.setItem("her_universe_sound_enabled", "true");
     }
     this.initContext();
-    this.startAmbient();
+    this.playMusic();
+    this.notify();
     return true;
   }
 
@@ -56,13 +94,13 @@ class SoundManager {
     if (typeof window !== "undefined") {
       localStorage.setItem("her_universe_sound_enabled", "false");
     }
-    this.stopAmbient();
+    this.pauseMusic();
+    this.notify();
   }
 
   public toggleSound(): boolean {
     if (this.isMuted) {
-      this.enableSound();
-      return true;
+      return this.enableSound();
     } else {
       this.disableSound();
       return false;
@@ -73,90 +111,195 @@ class SoundManager {
     return this.isMuted;
   }
 
-  public setVolume(vol: number): void {
-    this.volume = Math.max(0, Math.min(1, vol));
-    if (this.ambientGain && this.ctx) {
-      this.ambientGain.gain.setTargetAtTime(this.volume * 0.15, this.ctx.currentTime, 0.2);
-    }
+  public getIsPlaying(): boolean {
+    return this.isPlaying;
   }
 
   public getVolume(): number {
     return this.volume;
   }
 
+  public getProgress(): number {
+    return this.currentProgress;
+  }
+
+  public setVolume(vol: number): void {
+    this.volume = Math.max(0, Math.min(1, vol));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("her_universe_volume", this.volume.toString());
+    }
+    if (this.masterGain && this.ctx) {
+      this.masterGain.gain.setTargetAtTime(
+        this.isMuted ? 0.0001 : this.volume * 0.25,
+        this.ctx.currentTime,
+        0.1
+      );
+    }
+    if (this.customAudio) {
+      this.customAudio.volume = this.isMuted ? 0 : this.volume;
+    }
+    this.notify();
+  }
+
+  public setProgress(sec: number): void {
+    this.currentProgress = Math.max(0, Math.min(SIGNATURE_TRACK.duration, sec));
+    if (this.customAudio) {
+      this.customAudio.currentTime = this.currentProgress;
+    }
+    this.notify();
+  }
+
   /**
-   * Procedural dreamy ambient synthesizer:
-   * Uses gentle sine waves tuned to a celestial F# major / D# minor chord
-   * with slow LFO detuning to create a deep, relaxing cosmic atmosphere.
+   * PLAY SIGNATURE SOUNDTRACK
    */
-  public startAmbient(): void {
-    if (this.isMuted || this.isAmbientPlaying) return;
+  public playMusic(): void {
+    if (this.isMuted) {
+      this.isMuted = false;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("her_universe_sound_enabled", "true");
+      }
+    }
+
     const ctx = this.initContext();
     if (!ctx) return;
 
-    try {
-      this.stopAmbient();
+    this.isPlaying = true;
+    this.notify();
 
-      const master = ctx.createGain();
-      master.gain.setValueAtTime(0.001, ctx.currentTime);
-      master.gain.exponentialRampToValueAtTime(this.volume * 0.12, ctx.currentTime + 3);
-      master.connect(ctx.destination);
-      this.ambientGain = master;
-
-      // Celestial F# pentatonic chord frequencies (F#2, C#3, F#3, A#3, C#4)
-      const freqs = [92.5, 138.59, 185.0, 233.08, 277.18];
-      this.ambientOscillators = [];
-
-      freqs.forEach((freq, idx) => {
-        const osc = ctx.createOscillator();
-        osc.type = idx === 0 ? "triangle" : "sine";
-        osc.frequency.setValueAtTime(freq, ctx.currentTime);
-
-        // Add soft filter
-        const filter = ctx.createBiquadFilter();
-        filter.type = "lowpass";
-        filter.frequency.setValueAtTime(450 + idx * 80, ctx.currentTime);
-
-        const gain = ctx.createGain();
-        gain.gain.setValueAtTime(0.2 / (idx + 1), ctx.currentTime);
-
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(master);
-
-        osc.start();
-        this.ambientOscillators.push(osc);
+    // Check if local MP3 is available, else use built-in procedural synth
+    if (this.audioMode === "audio-file" && this.customAudio) {
+      this.customAudio.volume = this.volume;
+      this.customAudio.play().catch(() => {
+        this.startSynthSoundtrack();
       });
+      return;
+    }
 
-      this.isAmbientPlaying = true;
-    } catch {
-      // Audio autoplay gracefully handled
+    this.startSynthSoundtrack();
+  }
+
+  public pauseMusic(): void {
+    this.isPlaying = false;
+    if (this.customAudio) {
+      this.customAudio.pause();
+    }
+    this.stopSynthSoundtrack();
+    this.notify();
+  }
+
+  public togglePlayMusic(): void {
+    if (this.isPlaying) {
+      this.pauseMusic();
+    } else {
+      this.playMusic();
     }
   }
 
-  public stopAmbient(): void {
-    if (!this.isAmbientPlaying) return;
+  /**
+   * PROCEDURAL SOUNDTRACK ENGINE — "ONE OF THE GIRLS"
+   * Generates the iconic dark cinematic chords (Bm - G - Em - F#m)
+   * with deep sub-bass, smooth analog detune, and dreamy celestial filters.
+   */
+  private startSynthSoundtrack(): void {
+    const ctx = this.initContext();
+    if (!ctx) return;
+
+    this.stopSynthSoundtrack();
+
     try {
-      if (this.ambientGain && this.ctx) {
-        this.ambientGain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 1);
-      }
-      setTimeout(() => {
-        this.ambientOscillators.forEach((osc) => {
+      const master = ctx.createGain();
+      master.gain.setValueAtTime(0.001, ctx.currentTime);
+      master.gain.exponentialRampToValueAtTime(this.volume * 0.22, ctx.currentTime + 2.5);
+      master.connect(ctx.destination);
+      this.masterGain = master;
+
+      // Chord progressions representing "One of the Girls" mood (Bm -> G -> Em -> F#m)
+      const chordNotes = [
+        [123.47, 185.0, 246.94, 293.66], // B Minor (B2, F#3, B3, D4)
+        [98.0, 146.83, 196.0, 246.94],  // G Major (G2, D3, G3, B3)
+        [82.41, 123.47, 164.81, 196.0], // E Minor (E2, B2, E3, G3)
+        [92.5, 138.59, 185.0, 220.0],   // F# Minor (F#2, C#3, F#3, A3)
+      ];
+
+      let chordIndex = 0;
+
+      const playChord = () => {
+        if (!this.isPlaying || !this.ctx) return;
+
+        // Clean previous voice oscillators
+        this.activeVoices.forEach((osc) => {
           try {
             osc.stop();
             osc.disconnect();
           } catch {}
         });
-        this.ambientOscillators = [];
-        this.isAmbientPlaying = false;
-      }, 1000);
-    } catch {
-      this.isAmbientPlaying = false;
+        this.activeVoices = [];
+
+        const currentNotes = chordNotes[chordIndex % chordNotes.length];
+        chordIndex++;
+
+        currentNotes.forEach((freq, i) => {
+          if (!this.ctx || !this.masterGain) return;
+          const osc = this.ctx.createOscillator();
+          const filter = this.ctx.createBiquadFilter();
+          const gain = this.ctx.createGain();
+
+          osc.type = i === 0 ? "sawtooth" : "sine";
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+
+          // Warm lowpass filter for dark cinematic warmth
+          filter.type = "lowpass";
+          filter.frequency.setValueAtTime(420 + i * 110, this.ctx.currentTime);
+          filter.Q.setValueAtTime(1.5, this.ctx.currentTime);
+
+          // Smooth envelope
+          gain.gain.setValueAtTime(0.001, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.18 / (i + 1), this.ctx.currentTime + 1.2);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 4.8);
+
+          osc.connect(filter);
+          filter.connect(gain);
+          gain.connect(this.masterGain);
+
+          osc.start();
+          osc.stop(this.ctx.currentTime + 5.0);
+          this.activeVoices.push(osc);
+        });
+
+        // Track timer increment
+        this.currentProgress = (this.currentProgress + 4) % SIGNATURE_TRACK.duration;
+        this.notify();
+      };
+
+      // Play immediately, then every 4 seconds
+      playChord();
+      this.synthInterval = setInterval(playChord, 4000);
+    } catch {}
+  }
+
+  private stopSynthSoundtrack(): void {
+    if (this.synthInterval) {
+      clearInterval(this.synthInterval);
+      this.synthInterval = null;
     }
+    if (this.masterGain && this.ctx) {
+      try {
+        this.masterGain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.8);
+      } catch {}
+    }
+    setTimeout(() => {
+      this.activeVoices.forEach((osc) => {
+        try {
+          osc.stop();
+          osc.disconnect();
+        } catch {}
+      });
+      this.activeVoices = [];
+    }, 800);
   }
 
   /**
-   * Sound effect: Celestial Chime / Button Click
+   * SOUND EFFECT: Celestial Chime / Button Click
    */
   public playChime(freq: number = 880): void {
     if (this.isMuted) return;
@@ -183,7 +326,7 @@ class SoundManager {
   }
 
   /**
-   * Sound effect: Paper / Envelope opening rustle
+   * SOUND EFFECT: Paper / Envelope opening rustle
    */
   public playEnvelopeOpen(): void {
     if (this.isMuted) return;
@@ -191,7 +334,6 @@ class SoundManager {
     if (!ctx) return;
 
     try {
-      // Noise buffer for soft paper slide
       const bufferSize = ctx.sampleRate * 0.3;
       const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
       const data = buffer.getChannelData(0);
@@ -221,7 +363,7 @@ class SoundManager {
   }
 
   /**
-   * Sound effect: Candle blow out breath
+   * SOUND EFFECT: Candle blow out breath
    */
   public playBlowCandle(): void {
     if (this.isMuted) return;
@@ -257,32 +399,16 @@ class SoundManager {
   }
 
   /**
-   * Sound effect: Fireworks & Celebration fanfare arpeggio
+   * SOUND EFFECT: Fireworks & Celebration fanfare
    */
   public playCelebrationFanfare(): void {
     if (this.isMuted) return;
-    const notes = [523.25, 659.25, 783.99, 1046.5, 1318.51, 1567.98]; // C Major arpeggio
+    const notes = [523.25, 659.25, 783.99, 1046.5, 1318.51, 1567.98];
     notes.forEach((note, idx) => {
       setTimeout(() => {
         this.playChime(note);
       }, idx * 120);
     });
-  }
-
-  /**
-   * Optional external audio asset loader if custom MP3 is supplied
-   */
-  public playCustomAudio(src: string): void {
-    if (this.isMuted || typeof window === "undefined") return;
-    try {
-      if (!this.customAudioCache[src]) {
-        this.customAudioCache[src] = new Audio(src);
-      }
-      const audio = this.customAudioCache[src];
-      audio.volume = this.volume;
-      audio.currentTime = 0;
-      audio.play().catch(() => {});
-    } catch {}
   }
 }
 

@@ -5,11 +5,13 @@ import Image from "next/image";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { CharacterScene3D } from "./CharacterScene3D";
-import { Sparkles, Image as ImageIcon, Box, RotateCcw } from "lucide-react";
+import { Sparkles, Image as ImageIcon, Box, RotateCcw, ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { AKRITI_DATA } from "@/data/akriti";
 
 export function CharacterCanvas() {
   const [hasWebGL, setHasWebGL] = useState<boolean>(true);
   const [viewMode, setViewMode] = useState<"3d" | "portrait">("3d");
+  const [photoIndex, setPhotoIndex] = useState<number>(0);
   const [mounted, setMounted] = useState<boolean>(false);
 
   useEffect(() => {
@@ -24,6 +26,8 @@ export function CharacterCanvas() {
       setHasWebGL(false);
     }
   }, []);
+
+  const photos = AKRITI_DATA.referencePhotos;
 
   if (!mounted) {
     return (
@@ -55,7 +59,7 @@ export function CharacterCanvas() {
           }`}
         >
           <Box className="w-3.5 h-3.5" />
-          <span>3D Avatar</span>
+          <span>3D Fantasy Avatar</span>
         </button>
         <button
           onClick={() => setViewMode("portrait")}
@@ -66,15 +70,17 @@ export function CharacterCanvas() {
           }`}
         >
           <ImageIcon className="w-3.5 h-3.5" />
-          <span>Portrait</span>
+          <span>Authentic Portrait</span>
         </button>
       </div>
 
-      {/* Interaction Hint */}
-      <div className="absolute bottom-4 left-4 z-20 hidden sm:flex items-center gap-2 text-[11px] font-sans tracking-widest text-gold/70 px-3 py-1.5 rounded-full glass-pill border border-gold/15">
-        <RotateCcw className="w-3.5 h-3.5 animate-spin-slow" />
-        <span>DRAG TO ROTATE UNIVERSE</span>
-      </div>
+      {/* Interaction Hint (3D Mode) */}
+      {viewMode === "3d" && (
+        <div className="absolute bottom-4 left-4 z-20 hidden sm:flex items-center gap-2 text-[11px] font-sans tracking-widest text-gold/70 px-3 py-1.5 rounded-full glass-pill border border-gold/15">
+          <RotateCcw className="w-3.5 h-3.5 animate-spin-slow" />
+          <span>DRAG TO ROTATE UNIVERSE</span>
+        </div>
+      )}
 
       {/* Content Display: 3D Scene OR Photographic Masterpiece */}
       {viewMode === "3d" && hasWebGL ? (
@@ -98,37 +104,79 @@ export function CharacterCanvas() {
           </Canvas>
         </div>
       ) : (
-        /* Portrait / 2D Fallback Mode */
+        /* Portrait / Authentic Photographic Reference Mode */
         <div className="relative z-10 w-full h-full flex flex-col items-center justify-center p-6 text-center">
-          <div className="relative group max-w-sm sm:max-w-md w-full aspect-[3/4] rounded-2xl overflow-hidden border-2 border-gold/30 shadow-[0_0_50px_rgba(214,189,139,0.25)] transition-transform duration-500 hover:scale-[1.02]">
+          <div className="relative group max-w-sm sm:max-w-md w-full aspect-[3/4] rounded-2xl overflow-hidden border-2 border-gold/30 shadow-[0_0_50px_rgba(214,189,139,0.3)] transition-transform duration-500 hover:scale-[1.01]">
             <Image
-              src="/assets/akriti/reference/akriti-reference-01.jpg"
-              alt="Akriti Singh — The Main Character"
+              src={photos[photoIndex].src}
+              alt={photos[photoIndex].alt}
               fill
               priority
               className="object-cover object-center"
               sizes="(max-width: 768px) 100vw, 450px"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-midnight via-transparent to-transparent opacity-80" />
+            <div className="absolute inset-0 bg-gradient-to-t from-midnight via-transparent to-transparent opacity-85" />
 
+            {/* Photo Navigation Arrows */}
+            {photos.length > 1 && (
+              <>
+                <button
+                  onClick={() =>
+                    setPhotoIndex((prev) => (prev - 1 + photos.length) % photos.length)
+                  }
+                  className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full glass-pill border border-gold/30 text-ivory hover:text-gold transition-colors cursor-pointer"
+                  aria-label="Previous Photo"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() =>
+                    setPhotoIndex((prev) => (prev + 1) % photos.length)
+                  }
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full glass-pill border border-gold/30 text-ivory hover:text-gold transition-colors cursor-pointer"
+                  aria-label="Next Photo"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </>
+            )}
+
+            {/* Bottom Caption Overlay */}
             <div className="absolute bottom-6 inset-x-6 text-left">
               <span className="text-[10px] tracking-[0.25em] font-sans uppercase text-gold">
-                THE MAIN CHARACTER
+                THE MAIN CHARACTER • PLATE 0{photoIndex + 1}
               </span>
               <h3 className="font-serif text-2xl sm:text-3xl text-ivory">
                 Akriti Singh
               </h3>
               <p className="font-script text-lg text-lavender/90">
-                A universe where she is the main character.
+                {photos[photoIndex].caption}
               </p>
             </div>
+          </div>
+
+          {/* Distinguishing Characteristics Badges */}
+          <div className="mt-4 flex flex-wrap justify-center gap-1.5 max-w-md">
+            {[
+              "Natural Dark Waves",
+              "Expressive Brown Eyes",
+              "Soft Oval Form",
+              "Delicate Nose Stud & Hoops",
+            ].map((trait, idx) => (
+              <span
+                key={idx}
+                className="text-[9px] font-sans tracking-wider text-gold/80 px-2.5 py-0.5 rounded-full border border-gold/25 bg-purple-deep/50"
+              >
+                ✓ {trait}
+              </span>
+            ))}
           </div>
         </div>
       )}
 
       {/* Developer Replacement Path Guidance (Discrete & Elegant) */}
       <div className="absolute bottom-4 right-4 z-20 text-[9px] font-mono tracking-wider text-ivory/30 hover:text-ivory/70 transition-colors hidden lg:block">
-        Custom model path: public/assets/models/her-character.glb
+        Custom model: public/assets/models/her-character.glb
       </div>
     </div>
   );

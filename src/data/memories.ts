@@ -165,3 +165,45 @@ export const THINGS_I_REMEMBER = [
   "The way you make someone feel seen and appreciated, without ever needing an audience.",
   "Your quiet bravery whenever challenges arise — you stand tall with quiet poise.",
 ];
+
+
+/**
+ * =========================================================================
+ * FEATURE E: OUR FAVOURITE MOMENTS (POLAROID SHOWCASE)
+ * =========================================================================
+ * Dedicated keepsake polaroids celebrating Akriti.
+ */
+export const OUR_FAVORITE_MOMENTS = [
+  {
+    id: "fav-01",
+    title: "Golden Hour Serenade",
+    date: "A Golden Afternoon",
+    note: "The sunlight caught your eyes and made the whole world stop.",
+    image: "/assets/images/memories/memory-01.jpg",
+    tilt: "-rotate-2",
+  },
+  {
+    id: "fav-02",
+    title: "The Unfiltered Laugh",
+    date: "An Unforgettable Evening",
+    note: "Nothing in this universe sounds sweeter than your real laugh.",
+    image: "/assets/images/memories/memory-02.jpg",
+    tilt: "rotate-3",
+  },
+  {
+    id: "fav-03",
+    title: "Quiet Companionship",
+    date: "Under Starlight",
+    note: "When no words are needed because peace speaks for itself.",
+    image: "/assets/images/memories/memory-01.jpg",
+    tilt: "-rotate-1",
+  },
+  {
+    id: "fav-04",
+    title: "Her 19th Birthday Eve",
+    date: "November 6, 2026",
+    note: "Stepping into nineteen with timeless poise and celestial radiance.",
+    image: "/assets/images/memories/memory-02.jpg",
+    tilt: "rotate-2",
+  },
+];

@@ -57,7 +57,7 @@ export interface MemoryItem {
   title: string;
   caption: string;
   image: string;
-  category: "portrait" | "moment" | "adventure" | "quiet";
+  category: "portrait" | "moment" | "adventure" | "quiet" | "polaroid";
   aspectRatio?: "square" | "portrait" | "landscape";
   date?: string;
 }

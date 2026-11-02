@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Inter, Great_Vibes, Cinzel } from "next/font/google
 import "@/styles/globals.css";
 import { FloatingNavbar } from "@/components/navigation/FloatingNavbar";
 import { BackToTop } from "@/components/common/BackToTop";
+import { MusicPlayer } from "@/components/audio/MusicPlayer";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -69,6 +70,7 @@ export default function RootLayout({
         <main className="relative min-h-screen">
           {children}
         </main>
+        <MusicPlayer />
         <BackToTop />
       </body>
     </html>

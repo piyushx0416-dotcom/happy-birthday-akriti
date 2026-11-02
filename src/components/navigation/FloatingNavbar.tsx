@@ -20,12 +20,17 @@ const NAV_ITEMS = [
 export function FloatingNavbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isMuted, toggleSound, playClick } = useSound();
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 40);
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (totalHeight > 0) {
+        setScrollProgress(Math.min(100, Math.max(0, (window.scrollY / totalHeight) * 100)));
+      }
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
@@ -33,6 +38,14 @@ export function FloatingNavbar() {
 
   return (
     <>
+      {/* Top Reading Progress Bar */}
+      <div className="fixed top-0 left-0 right-0 h-[2.5px] bg-white/5 z-50 pointer-events-none">
+        <div
+          className="h-full bg-gradient-to-r from-gold/60 via-gold to-gold-light transition-all duration-150 shadow-[0_0_10px_rgba(214,189,139,0.7)]"
+          style={{ width: `${scrollProgress}%` }}
+        />
+      </div>
+
       {/* Floating Header */}
       <header
         className={`fixed top-4 left-0 right-0 z-50 flex justify-center px-4 sm:px-6 transition-all duration-500 ${

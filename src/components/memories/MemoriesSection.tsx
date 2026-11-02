@@ -5,7 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Sparkles, Calendar, MapPin, Heart, Maximize2, Quote, BookOpen } from "lucide-react";
 import { SectionHeader } from "@/components/common/SectionHeader";
-import { TIMELINE_EVENTS, MEMORY_GALLERY, LITTLE_MOMENTS, THINGS_I_REMEMBER } from "@/data/memories";
+import { TIMELINE_EVENTS, MEMORY_GALLERY, LITTLE_MOMENTS, THINGS_I_REMEMBER, OUR_FAVORITE_MOMENTS } from "@/data/memories";
 import { MemoryItem } from "@/types";
 import { LightboxModal } from "@/components/gallery/LightboxModal";
 import { useSound } from "@/hooks/useSound";
@@ -229,6 +229,75 @@ export function MemoriesSection() {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* =========================================================================
+          FEATURE E: OUR FAVOURITE MOMENTS (POLAROID SCRAPBOOK)
+         ========================================================================= */}
+      <div className="mt-24 pt-16 border-t border-gold/20">
+        <div className="text-center max-w-xl mx-auto mb-14">
+          <span className="text-[10px] tracking-[0.3em] font-sans uppercase text-gold">
+            PART FIVE • KEEPSAKES
+          </span>
+          <h3 className="font-serif text-3xl sm:text-4xl text-ivory mt-2">
+            Our Favourite Moments
+          </h3>
+          <p className="text-xs sm:text-sm text-ivory/70 mt-2 font-sans font-light">
+            Polaroids pinned to our little universe — treasured snapshots of Akriti that never fade.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {OUR_FAVORITE_MOMENTS.map((moment, idx) => (
+            <motion.div
+              key={moment.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: idx * 0.1 }}
+              className={`bg-[#F9F5EC] p-4 pb-6 rounded-xl text-[#1E1729] shadow-2xl border border-[#E5DAC8] transition-all duration-300 hover:scale-105 hover:rotate-0 hover:z-20 cursor-pointer ${moment.tilt}`}
+              onClick={() => {
+                playClick(980);
+                setSelectedImage({
+                  id: moment.id,
+                  title: moment.title,
+                  caption: moment.note,
+                  image: moment.image,
+                  category: "polaroid",
+                  aspectRatio: "portrait",
+                  date: moment.date,
+                });
+              }}
+            >
+              {/* Golden Pushpin Accent */}
+              <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-gold-dark via-gold to-white border border-gold/70 shadow-md mx-auto mb-3" />
+
+              {/* Polaroid Photo Frame */}
+              <div className="relative aspect-square w-full rounded-md overflow-hidden bg-black/10 shadow-inner">
+                <Image
+                  src={moment.image}
+                  alt={moment.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 300px"
+                />
+              </div>
+
+              {/* Handwritten Note Area */}
+              <div className="mt-4 px-1 text-center">
+                <span className="font-sans text-[10px] uppercase tracking-widest text-[#857262] block">
+                  {moment.date}
+                </span>
+                <h4 className="font-serif text-lg text-[#1A1224] mt-0.5 font-medium leading-snug">
+                  {moment.title}
+                </h4>
+                <p className="font-script text-base text-[#523E6B] mt-1.5 leading-snug">
+                  &ldquo;{moment.note}&rdquo;
+                </p>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
 
