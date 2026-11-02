@@ -1,37 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Inter, Great_Vibes, Cinzel } from "next/font/google";
 import "@/styles/globals.css";
 import { FloatingNavbar } from "@/components/navigation/FloatingNavbar";
 import { BackToTop } from "@/components/common/BackToTop";
 import { MusicPlayer } from "@/components/audio/MusicPlayer";
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-cormorant",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const greatVibes = Great_Vibes({
-  subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-great-vibes",
-  display: "swap",
-});
-
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-  variable: "--font-cinzel",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "HER UNIVERSE | Akriti Singh",
@@ -61,10 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${cormorant.variable} ${inter.variable} ${greatVibes.variable} ${cinzel.variable}`}
-    >
+    <html lang="en">
       <body className="bg-midnight text-ivory antialiased selection:bg-gold/30 selection:text-white">
         <FloatingNavbar />
         <main className="relative min-h-screen">
