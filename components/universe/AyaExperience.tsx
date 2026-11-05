@@ -32,13 +32,13 @@ const BOOK_PHYSICAL_PAGES: PhysicalPageData[] = [
     id: 0,
     frontImage: "/assets/aya/theend.jpg", // Cute front cover (hands holding heart) from the video
     frontAlt: "Akriti's Memory Card Cover",
-    backImage: "/assets/akriti/photo-01.jpg", // Inside Left Page 1
-    backAlt: "Akriti - Cherished Portrait",
+    backImage: "/assets/akriti/card-photo-01.png", // Inside Left Page 1 (Childhood Party Dress)
+    backAlt: "Akriti - Childhood Party Dress",
   },
   {
     id: 1,
-    frontImage: "/assets/akriti/photo-02.jpg", // Inside Right Page 1
-    frontAlt: "Akriti - Radiant Smile",
+    frontImage: "/assets/akriti/card-photo-02.jpg", // Inside Right Page 1 (Garden Toddler Portrait)
+    frontAlt: "Akriti - Garden Toddler Portrait",
     backImage: "/assets/akriti/photo-03.jpg", // Inside Left Page 2
     backAlt: "Akriti - Sweet Memory",
   },
