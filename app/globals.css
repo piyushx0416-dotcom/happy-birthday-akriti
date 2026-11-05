@@ -1,0 +1,528 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-main: #07050B;
+    --gold: #E8C994;
+    --pink: #FF3D91;
+    --emerald: #10B981;
+    --ivory: #F8F1E8;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: #07050B;
+    color: #F8F1E8;
+    font-family: var(--font-space-grotesk), var(--font-inter), sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  img, canvas {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: high-quality;
+  }
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #07050B;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E8C994;
+  border-radius: 9999px;
+}
+
+/* Custom Typography Helpers */
+.font-editorial-serif {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+.font-editorial-script {
+  font-family: var(--font-cormorant), Garamond, serif;
+}
+
+.font-cinzel-caps {
+  font-family: var(--font-cinzel), serif;
+}
+
+/* Gradients */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F5E6CC 40%, #E8C994 80%, #C49D58 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-pink-gradient {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FF9FCB 40%, #FF3D91 80%, #D81B60 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Shadows & Glows */
+.glow-gold {
+  text-shadow: 0 0 20px rgba(232, 201, 148, 0.4);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.35);
+  border-color: rgba(16, 185, 129, 0.7);
+}
+
+.glow-pink-box {
+  box-shadow: 0 0 30px rgba(255, 61, 145, 0.45);
+  border-color: rgba(255, 61, 145, 0.8);
+}
+
+/* 3D Book & Page Flip Experience */
+.perspective-2000 {
+  perspective: 2000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(255, 61, 145, 0.4), 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 61, 145, 0.8), 0 15px 40px rgba(255, 61, 145, 0.3);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+@keyframes heartFloatUp {
+  0% {
+    transform: translateY(105vh) scale(0.6);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.7;
+  }
+  90% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(-10vh) scale(1.1);
+    opacity: 0;
+  }
+}
+
+.floating-heart-particle {
+  position: absolute;
+  pointer-events: none;
+  animation: heartFloatUp 7s linear infinite;
+}
+
+/* Reference Website Specific Keyframes */
+@keyframes giftCelebration {
+  0% {
+    transform: translate(-50%, -50%) scale(0.4);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes romanticBorder {
+  0%, 100% {
+    border-color: rgba(255, 105, 180, 0.4);
+    box-shadow: 0 0 15px rgba(255, 105, 180, 0.35);
+  }
+  50% {
+    border-color: rgba(255, 20, 147, 0.85);
+    box-shadow: 0 0 30px rgba(255, 20, 147, 0.7);
+  }
+}
+
+@keyframes musicPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 8px 25px rgba(255, 107, 157, 0.8);
+  }
+}
+
+@keyframes showHint {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  20%, 80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes fireworkExplode {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-90px) scaleY(2.5);
+  }
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+
+
+
+/* ============================================================ */
+/* 3D INTERACTIVE MEMORY BOOK & PAGE FLIP (AYA REFERENCE)        */
+/* ============================================================ */
+
+.book-container {
+  perspective: 2000px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transform: scale(0.8) translateY(50px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.book-container.show {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.book-container::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(circle, rgba(255, 61, 145, 0.2) 0%, rgba(255, 61, 145, 0.05) 50%, transparent 70%);
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 30px;
+}
+
+.book {
+  width: 600px;
+  height: 400px;
+  position: relative;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  user-select: none;
+}
+
+@media (max-width: 768px) {
+  .book {
+    width: 320px;
+    height: 220px;
+    transform: scale(0.92);
+  }
+}
+
+.page {
+  width: 300px;
+  height: 400px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.8s ease;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8), 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  touch-action: pan-x;
+  z-index: var(--page-z-index, 1);
+}
+
+@media (max-width: 768px) {
+  .page {
+    width: 160px;
+    height: 220px;
+  }
+}
+
+.page-front,
+.page-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+  border: 2px solid #ddd;
+  background: #ffffff;
+}
+
+.page-front {
+  border-radius: 0 8px 8px 0;
+  z-index: 2;
+}
+
+.page-back {
+  border-radius: 8px 0 0 8px;
+  transform: rotateY(180deg);
+}
+
+.page-front img,
+.page-back img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: inherit;
+  position: relative;
+  z-index: 1;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: high-quality;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.page-front::before,
+.page-back::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.page-front::before {
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.05) 2%, transparent 10%);
+}
+
+.page-back::before {
+  background: linear-gradient(90deg, transparent 90%, rgba(0, 0, 0, 0.05) 98%, rgba(0, 0, 0, 0.1) 100%);
+}
+
+.page.flipped {
+  transform: rotateY(-180deg);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8), -10px 10px 20px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  z-index: var(--page-flipped-z-index, 1);
+}
+
+.page.flipping {
+  transform: rotateY(-90deg);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8), -5px 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  z-index: 50 !important;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.04);
+  }
+}
+
+/* ========================================================= */
+/* Authentic Aya-Sigma-Six Memory Book & Presentation Styles */
+/* ========================================================= */
+
+.content-display {
+  position: fixed;
+  top: 3.5%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-15px);
+  width: 90vw;
+  max-width: 650px;
+  min-height: 110px;
+  max-height: 220px;
+  background:
+    linear-gradient(145deg, #ffffff 0%, #fefefe 100%),
+    radial-gradient(circle at 50% 50%, rgba(255, 192, 203, 0.08) 0%, transparent 60%);
+  border-radius: 20px;
+  padding: 24px 32px;
+  box-shadow:
+    0 20px 60px rgba(255, 105, 180, 0.22),
+    0 10px 30px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(255, 192, 203, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.content-display.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.content-display::after {
+  content: '💕';
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  font-size: 22px;
+  opacity: 0.75;
+  animation: heartbeat 2s ease-in-out infinite;
+}
+
+.content-display p {
+  margin: 0;
+  padding: 0 16px;
+  color: #2c1810;
+  font-size: clamp(20px, 3.2vw, 27px);
+  line-height: 1.8;
+  text-align: center;
+  font-weight: 500;
+  font-family: var(--font-dancing), 'Dancing Script', 'Brush Script MT', cursive;
+  letter-spacing: 0.4px;
+  -webkit-font-smoothing: antialiased;
+  background: linear-gradient(45deg, #4a1e12, #8b3a2b, #6b281b, #4a1e12);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.65;
+  }
+  50% {
+    transform: scale(1.22);
+    opacity: 0.95;
+  }
+}
+
+/* Twinkling Background Stars (Authentic aya-sigma-six style) */
+.stars-container {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+  overflow: hidden;
+}
+
+.star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle 2.2s infinite ease-in-out;
+}
+
+.star.large {
+  width: 4px;
+  height: 4px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+}
+
+.star.medium {
+  width: 3px;
+  height: 3px;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.7);
+}
+
+.star.small {
+  width: 2px;
+  height: 2px;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+}
+
+/* Floating Hearts: emerging one by one from below the screen */
+.heart {
+  position: fixed;
+  bottom: -60px; /* Completely hidden off-screen below viewport */
+  z-index: 15;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: float-heart 7s linear infinite;
+  animation-fill-mode: both;
+}
+
+@keyframes float-heart {
+  0% {
+    transform: translateY(0) scale(0.3) rotate(0deg);
+    opacity: 0;
+  }
+  12% {
+    transform: translateY(-80px) scale(0.9) rotate(-8deg);
+    opacity: 0.9;
+  }
+  85% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(-115vh) scale(0.6) rotate(16deg);
+    opacity: 0;
+  }
+}
+

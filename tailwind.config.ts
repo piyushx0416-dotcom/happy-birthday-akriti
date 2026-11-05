@@ -2,86 +2,86 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       colors: {
-        midnight: {
-          DEFAULT: "#09080F",
-          light: "#120F1F",
-          dark: "#050409",
+        universe: {
+          black: "#08080D", // Primary Background
+          charcoal: "#111119", // Secondary Background
+          surface: "#151522",
+          card: "#191928",
+          border: "rgba(255, 61, 145, 0.18)",
         },
-        purple: {
-          deep: "#171126",
-          royal: "#30204D",
-          mystic: "#493570",
+        accent: {
+          pink: "#FF3D91", // Primary Accent (Electric Pink)
+          rose: "#FF9FCB", // Secondary Accent (Soft Rose)
+          gold: "#E8C994", // Additional Accent (Champagne Gold)
+          lavender: "#BBA7FF", // Additional Accent (Lavender)
+          ivory: "#F8F1E8", // Additional Accent (Warm Ivory)
         },
-        lavender: {
-          DEFAULT: "#C5B2E8",
-          light: "#E1D6F6",
-          dark: "#9E82D1",
-        },
-        dustypink: {
-          DEFAULT: "#DDAEBC",
-          light: "#EDC9D4",
-          dark: "#B88697",
+        obsidian: {
+          950: "#08080D",
+          900: "#0d0d16",
+          800: "#141422",
+          700: "#1c1c30",
         },
         gold: {
-          DEFAULT: "#D6BD8B",
-          champagne: "#D6BD8B",
-          light: "#EFE2C5",
-          dark: "#A38A52",
+          champagne: "#E8C994",
+          metallic: "#d4af37",
+          shimmer: "#ebd399",
         },
         ivory: {
-          DEFAULT: "#F5F0E8",
-          warm: "#F5F0E8",
-          soft: "#FAF7F2",
-          muted: "#E0D7C8",
+          warm: "#F8F1E8",
+          soft: "#f2ece2",
+          paper: "#faf6ef",
         },
       },
       fontFamily: {
-        serif: ["var(--font-cormorant)", "Georgia", "serif"],
-        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
-        script: ["var(--font-great-vibes)", "cursive"],
-        cinematic: ["var(--font-cinzel)", "Cinzel", "serif"],
+        serif: ["var(--font-cormorant)", "Playfair Display", "serif"],
+        display: ["var(--font-playfair)", "var(--font-cinzel)", "serif"],
+        sans: ["var(--font-space-grotesk)", "var(--font-inter)", "sans-serif"],
+        mono: ["var(--font-space-mono)", "monospace"],
+        dancing: ["var(--font-dancing)", "Dancing Script", "cursive"],
       },
       animation: {
-        "float-slow": "float 8s ease-in-out infinite",
-        "float-medium": "float 5s ease-in-out infinite",
-        "pulse-subtle": "pulseSubtle 4s ease-in-out infinite",
-        "glow": "glow 3s ease-in-out infinite alternate",
-        "twinkle": "twinkle 3s ease-in-out infinite alternate",
-        "shimmer": "shimmer 2.5s linear infinite",
+        "float-slow": "float 7s ease-in-out infinite",
+        "float-reverse": "floatReverse 8s ease-in-out infinite",
+        "pulse-glow": "pulseGlow 3.5s ease-in-out infinite",
+        "pulse-pink": "pulsePink 2.5s ease-in-out infinite",
+        "shimmer-slide": "shimmerSlide 3s linear infinite",
+        "spin-slow": "spin 25s linear infinite",
       },
       keyframes: {
         float: {
           "0%, 100%": { transform: "translateY(0px)" },
           "50%": { transform: "translateY(-12px)" },
         },
-        pulseSubtle: {
-          "0%, 100%": { opacity: "1", transform: "scale(1)" },
-          "50%": { opacity: "0.85", transform: "scale(1.02)" },
+        floatReverse: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(12px)" },
         },
-        glow: {
-          "0%": { filter: "drop-shadow(0 0 10px rgba(214, 189, 139, 0.3))" },
-          "100%": { filter: "drop-shadow(0 0 24px rgba(214, 189, 139, 0.7))" },
+        pulseGlow: {
+          "0%, 100%": { opacity: "0.6", transform: "scale(1)" },
+          "50%": { opacity: "1", transform: "scale(1.04)" },
         },
-        twinkle: {
-          "0%": { opacity: "0.2", transform: "scale(0.8)" },
-          "100%": { opacity: "1", transform: "scale(1.2)" },
+        pulsePink: {
+          "0%, 100%": {
+            boxShadow: "0 0 15px rgba(255, 61, 145, 0.3)",
+            borderColor: "rgba(255, 61, 145, 0.4)",
+          },
+          "50%": {
+            boxShadow: "0 0 35px rgba(255, 61, 145, 0.7)",
+            borderColor: "rgba(255, 61, 145, 0.9)",
+          },
         },
-        shimmer: {
+        shimmerSlide: {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
-      },
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "cosmic-glow": "radial-gradient(ellipse at 50% 30%, rgba(48, 32, 77, 0.6) 0%, rgba(23, 17, 38, 0.8) 50%, rgba(9, 8, 15, 1) 100%)",
-        "gold-shimmer": "linear-gradient(90deg, #D6BD8B 0%, #FFF4DE 50%, #D6BD8B 100%)",
       },
     },
   },

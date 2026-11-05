@@ -1,151 +1,178 @@
-# HER UNIVERSE ✦ Akriti Singh
-> *"A universe where she is the main character."*
+# HER UNIVERSE • AKRITI SINGH
+### A Cinematic Interactive Birthday Experience for Her 19th Birthday (November 6, 2026)
 
-A luxury, interactive digital universe crafted exclusively for **Akriti Singh** in celebration of her **19th Birthday** (November 6, 2026).
-
----
-
-## 🌟 Visual Architecture & Aesthetics
-This project combines three visual paradigms:
-1. **Dark Cinematic Design**: Midnight black (`#09080F`), deep purple (`#171126`), royal purple (`#30204D`), and volumetric cosmic starlight.
-2. **Dreamy Fantasy Design**: AAA cinematic 3D environment with floating celestial islands, golden rune rings, stardust particles, and ethereal avatar styling.
-3. **Luxury Editorial Design**: Cormorant Garamond serif typography, champagne gold (`#D6BD8B`), warm ivory (`#F5F0E8`), refined grid borders, and gallery plate formatting.
+> **"In every universe, I would still choose yours."**  
+> An award-winning, professionally art-directed digital birthday experience crafted exclusively for **Akriti Singh**.
 
 ---
 
-## 🚀 Key Features & Experiences
+## ✦ Table of Contents
 
-### 1. Opening Experience (`/`)
-- Cinematic intro screen with particle stardust and smooth fading transitions.
-- "Somewhere in this universe, there exists a world that revolves around one extraordinary person."
-- Choice to **Enter with Sound** or **Enter Silently**, plus skip-intro accessibility.
-
-### 2. The Main Character Hero Experience (`/universe`)
-- Full-screen interactive 3D hero scene built with **Three.js, React Three Fiber, and Drei**.
-- Ethereal avatar with dark wavy hair, champagne gold waist sash, floating rune rings, and celestial core.
-- Interactive mode switcher to toggle between **3D Avatar** and the **Photographic Masterpiece**.
-- Graceful 2D fallback for devices without WebGL.
-- Drop-in custom model path: `public/assets/models/her-character.glb`.
-
-### 3. The Museum of Her (`/her`)
-- Luxury virtual museum inspired by high-end architectural editorial exhibitions:
-  - **Exhibition 01: The Masterpiece** (Akriti's introduction and natural traits).
-  - **Exhibition 02: Personality Gallery** (Nine virtues: Kindness, Intelligence, Emotional Depth, Individuality, Humour, Resilience, Thoughtfulness, Subtle Radiance, Ordinary Magic).
-  - **Exhibition 03: The Little Things** (Habits, expressions, hair tuck, spontaneous laugh).
-  - **Exhibition 04: The Beautiful Details** (Natural elegance, dark eyes, small hoop earrings, nose stud).
-  - **Exhibition 05: Her Favourite Things** (Colours, music, seasons, coffee, comforts).
-  - **Exhibition 06: The Final Portrait** (Personalized celebration tribute).
-
-### 4. Our Little Universe — Memories (`/memories`)
-- **Our Timeline**: Chronological milestone path with dates, locations, and descriptions.
-- **Memory Gallery**: Curated photo gallery with category filter and full-screen lightbox with keyboard controls (Esc, Arrow Left/Right).
-- **Little Moments**: Memorable quotes and inside jokes.
-- **Things I Remember**: Personal observations about Akriti.
-- **Our Favourite Moments (Feature E)**: Polaroid scrapbook showcase with golden pins, gentle tilts, handwritten notes, and click-to-expand modal view.
-
-### 5. The Interactive Fairytale (`/fairytale`)
-- Five connected narrative chapters where Akriti is the protagonist:
-  - Chapter I: The Girl Who Makes Everything Beautiful
-  - Chapter II: A World Full of Little Wonders
-  - Chapter III: The Things That Make Her Special
-  - Chapter IV: A Thousand Little Reasons
-  - Chapter V: A Day Dedicated to Her (leading into birthday)
-- Interactive chapter switcher, progress indicators, and magical artifacts.
-
-### 6. Open When... — Interactive Letters (`/letters`)
-- Eight sealed luxury envelopes with wax seals and prompt teasers:
-  1. Open when you're sad
-  2. Open when you miss me
-  3. Open when you need a smile
-  4. Open when you feel insecure
-  5. Open when you need reassurance
-  6. Open when you want to feel loved
-  7. Open when you can't sleep
-  8. Open when you need to remember how special you are
-- Realistic paper opening sound effect, envelope unfolding animation, and full parchment modal.
-
-### 7. 365 Reasons to Smile (`/reasons`)
-- Interactive card deck with smooth flip animations.
-- **"GIVE ME ANOTHER REASON"** random generator.
-- Toggle to browse all 365 reasons for every day of her nineteenth year.
-- Category tags and heart saving.
-
-### 8. The Celestial Birthday Room (`/birthday`)
-- Grand finale celebration.
-- **Interactive Birthday Cake** with 19 candles and realistic flickering flames.
-- **"MAKE A WISH & BLOW CANDLES"** interaction:
-  - Extinguishes flames with candle smoke wisps.
-  - Whoosh sound effect.
-  - Golden fireworks burst across the screen via Canvas confetti.
-  - Celebratory fanfare arpeggio.
-  - Reveals the Grand Birthday Blessing Card.
-- **"A LETTER FROM MY HEART"** modal button for the final intimate letter.
-- Final scene: *"THE UNIVERSE IS BIG. BUT MY FAVOURITE PART OF IT WILL ALWAYS BE YOU."*
-
-### 9. Central Audio Management & Signature Soundtrack (`src/lib/audio.ts`)
-- **Signature Soundtrack**: *"One of the Girls"* by The Weeknd, JENNIE, and Lily-Rose Depp.
-- **Floating Luxury Music Player**:
-  - Dark translucent glassmorphic body with champagne-gold highlights.
-  - Rotating vinyl album artwork.
-  - Interactive play/pause, scrubbable progress bar, volume slider, and mute button.
-  - Real-time animated audio visualizer waveform bars.
-  - Multi-source audio engine: built-in procedural synth chords (Bm, G, Em, F#m), official YouTube video/audio stream modal player, and local audio file support.
-- **Web Audio API procedural sound effects**:
-  - Melodic harp chime clicks.
-  - Paper envelope rustle.
-  - Candle blowing whoosh.
-  - Celebration fanfare arpeggios.
-- Persistent sound toggle in floating navbar and smooth cross-route playback.
+1. [Creative Vision & Visual Identity](#-creative-vision--visual-identity)
+2. [The Seven Experiences](#-the-seven-experiences)
+3. [Technology Stack](#-technology-stack)
+4. [Quick Start & Local Setup](#-quick-start--local-setup)
+5. [Photograph Customization System](#-photograph-customization-system)
+6. [Editing Content, Letters & Qualities](#-editing-content-letters--qualities)
+7. [Audio & Ambient Soundtrack](#-audio--ambient-soundtrack)
+8. [Mobile Responsiveness & Performance](#-mobile-responsiveness--performance)
+9. [Deployment Guide](#-deployment-guide)
 
 ---
 
-## 🛠️ Technology Stack
-- **Framework**: Next.js 15 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **3D Graphics**: Three.js, React Three Fiber, React Three Drei
-- **Animation**: Framer Motion
-- **Icons**: Lucide React
-- **Celebration Effects**: Canvas Confetti
-- **Audio**: Web Audio API (with zero external dependencies required)
+## ✦ Creative Vision & Visual Identity
+
+*HER UNIVERSE* transforms personal storytelling into a museum-grade digital film experience. Designed from the ground up to avoid generic templates, floating clip-art, or repetitive card grids, every screen carries an intentional editorial identity.
+
+### Design Tokens & Palette
+- **Primary Background:** Deep Midnight Black (`#08080D`)
+- **Secondary Background:** Dark Charcoal (`#111119`)
+- **Primary Accent:** Electric Pink (`#FF3D91`)
+- **Secondary Accent:** Soft Rose (`#FF9FCB`)
+- **Additional Accents:**
+  - Champagne Gold (`#E8C994`)
+  - Lavender (`#BBA7FF`)
+  - Warm Ivory (`#F8F1E8`)
+
+### Typography
+- **Editorial Serifs:** `Playfair Display` & `Cormorant Garamond`
+- **Modern Geometric Sans:** `Space Grotesk`, `DM Sans`, and `Inter`
+- **Technical Monospace:** `Space Mono`
 
 ---
 
-## 📁 Content Customization (`src/data/`)
-All personal content is stored in clean, editable TypeScript files with clear comments:
-- `src/data/akriti.ts` — Profile, distinguishing traits, favourite things, habits.
-- `src/data/qualities.ts` — Personality gallery virtues and quotes.
-- `src/data/memories.ts` — Timeline milestones, memory gallery, inside jokes.
-- `src/data/fairytale.ts` — The 5 narrative chapters.
-- `src/data/letters.ts` — The 8 Open When letters.
-- `src/data/reasons.ts` — 365 curated reasons to smile.
-- `src/data/birthday.ts` — Birthday blessing, wishes, and final letter.
+## ✦ The Seven Experiences
+
+The centerpiece of the application is a choreographed 7-act cinematic journey available directly at `/`:
+
+| Experience | Name | Core Visuals & Interactions |
+|---|---|---|
+| **Act I** | **The Digital Countdown** | Full-screen electric pink and magenta digital-rain canvas stream. 3 → 2 → 1 cinematic scale & blur reveal, followed by the emerging reveal of **HAPPY → BIRTHDAY → AKRITI** with celestial bloom. Includes Skip Intro & Replay. |
+| **Act II** | **The Magical Night** | Transition to deep navy-black midnight sky with twinkling stars and drifting stardust. Centerpiece illustration of Akriti in an ivory gown holding an interactive celestial birthday cake. Guests can **Blow out candles / Make a wish** with dynamic particle smoke and sparks. |
+| **Act III** | **The Birthday Message** | Dark starry background framing a central Warm Ivory card (`#F8F1E8`) with gold filigree and an embossed watermark. Gradual line-by-line reveal of *"Happy birthday, my love."* and personal introductory copy. |
+| **Act IV** | **The Interactive Photograph Experience** | Exhibition gallery with 4 switchable visual layouts: **Two-Photo Editorial**, **Single Spotlight**, **Stacked 3D Cards**, and **Polaroid Collection**. Interactive 3D Y-axis card flip revealing personal captions, dates, and archival notes on the back. Uses authentic photographs of Akriti. |
+| **Act V** | **The Birthday Letter** | A luxury digital envelope in midnight obsidian with gold trim and a wax seal stamped with an embossed "A". Clicking breaks the seal with audio feedback; top flap unfolds in 3D perspective and the warm ivory letter emerges with luxury wedding-invitation typography. |
+| **Act VI** | **Her Qualities** | High-fashion editorial storytelling (no generic cards!). Large-scale typography showcasing the 8 core pillars (*Her Kindness, Her Individuality, Her Beautiful Mind, Her Strength, Her Smile, Her Little Habits, Her Dreams, Her Way of Seeing the World*). Interacting triggers smooth background color shifts, profound quotes, and paired archival photographs. |
+| **Act VII** | **The Heart Collage (Grand Finale)** | Begins in pure darkness. Stars ignite, a tiny glowing pink seed heart pulses, and authentic photograph frames of Akriti fly from the depths into an exact parametric heart curve. On formation, reveals: *"IN EVERY UNIVERSE, I WOULD STILL CHOOSE YOURS."* and *"HAPPY 19TH BIRTHDAY, AKRITI"* with a golden/rose stardust celebration shower and replay controls. |
+
+### Floating Cinematic Dock Controller
+During the journey, a sleek, floating dock provides:
+- One-click navigation to jump between any of the 7 chapters
+- Sound mute/unmute toggle with animated equalizer bars
+- Fullscreen mode toggle
+- Seamless portal to explore the 3D Universe islands
 
 ---
 
-## 💻 Local Development
+## ✦ Technology Stack
 
+- **Framework:** Next.js 14 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS, Glassmorphism, 3D Transforms
+- **Motion & Physics:** Framer Motion, GSAP, HTML5 Canvas 60 FPS
+- **Celebration Effects:** Canvas Confetti
+- **Audio Engine:** Web Audio API Procedural Celestial Synthesizer + Custom MP3 support
+- **Icons:** Lucide React
+
+---
+
+## ✦ Quick Start & Local Setup
+
+### Prerequisites
+- Node.js 18.x or newer
+- npm or pnpm
+
+### 1. Installation
 ```bash
-# Install dependencies
 npm install
+```
 
-# Start development server
+### 2. Run the Development Server
+```bash
 npm run dev
+```
+Open **[http://localhost:3000](http://localhost:3000)** in your browser to experience the cinematic journey!
 
-# Open in browser
-http://localhost:3000
+### 3. Production Build
+```bash
+npm run build
+npm run start
 ```
 
 ---
 
-## 🚢 Deployment (Vercel)
+## ✦ Photograph Customization System
 
-1. Push this repository to GitHub, GitLab, or Bitbucket.
-2. Go to [vercel.com](https://vercel.com) and import the repository.
-3. Framework Preset: **Next.js**.
-4. Root Directory: `./`.
-5. Click **Deploy**.
+All photographs of Akriti are located in:
+```
+public/assets/akriti/
+```
+
+### File Naming Convention:
+- `photo-01.jpg` — Main landscape portrait
+- `photo-02.jpg` — Signature vertical portrait
+- `photo-03.jpg` to `photo-12.jpg` — Varied detail, candid, smile, and milestone photos
+
+### Replacing Photographs:
+To add or swap photos:
+1. Place your `.jpg` or `.png` files directly inside `public/assets/akriti/`.
+2. Name them `photo-01.jpg`, `photo-02.jpg`, etc.
+3. No React components need to be modified! The entire site dynamically reads from this directory.
 
 ---
 
-*Designed and developed exclusively for Akriti Singh.*
+## ✦ Editing Content, Letters & Qualities
+
+All texts, dates, messages, captions, and quotes are centralized in a single clean TypeScript file:
+```
+lib/data/experienceData.ts
+```
+
+### What You Can Edit in `lib/data/experienceData.ts`:
+- **Celebrant Details:** Full name, preferred name, milestone age (19), birth date.
+- **Introductory Message & Birthday Card:** Headline, body paragraphs.
+- **The Birthday Letter:** Salutation, body paragraphs, signoff, author name, date.
+- **The 8 Qualities:** Titles, subtitles, quotes, descriptions, and accent colors.
+- **Photograph Captions:** Titles, subtitles, captions, dates, and tags for every photo.
+- **Finale Message:** Grand reveal quote and birthday reveal text.
+
+---
+
+## ✦ Audio & Ambient Soundtrack
+
+The website comes with an embedded **zero-dependency Web Audio API procedural synthesizer**:
+- Plays warm, ethereal chords in F# Major / Eb Minor that shimmer with soft detuning.
+- Plays micro-interaction audio effects:
+  - Celestial chime on countdown numbers and birthday reveal
+  - Tactile whoosh on 3D card flips
+  - Crisp seal-break sound on opening the letter
+  - Celebration arpeggios on the heart collage finale
+
+### Adding a Custom MP3 Soundtrack:
+If you want to play a specific song (e.g. your song for Akriti):
+1. Copy your audio file to:  
+   `public/assets/music/universe-theme.mp3`
+2. The sound engine will automatically detect and loop your MP3 instead of the synthesizer!
+
+---
+
+## ✦ Mobile Responsiveness & Performance
+
+- **Fluid Viewport:** Built with 100dvh support to avoid browser address bar jumps.
+- **Touch Gestures:** Tap-to-flip cards, swipeable layouts, and touch-optimized buttons.
+- **Adaptive Heart Curve:** The finale heart geometry dynamically calculates coordinates for mobile vertical screens (`18 points`) versus desktop widescreen (`22 points + anchors`), maintaining a balanced, symmetrical silhouette on all devices.
+- **Accessibility:** Fully supports `prefers-reduced-motion` to tone down high-intensity animations when requested.
+
+---
+
+## ✦ Deployment Guide
+
+### Deploying to Vercel
+1. Push your repository to GitHub.
+2. Sign in to [Vercel](https://vercel.com) and click **"Add New Project"**.
+3. Select this repository. Next.js will be detected automatically.
+4. Click **Deploy**.
+
+---
+
+*HER UNIVERSE • Dedicated to Akriti Singh • 19th Birthday • November 6, 2026*

@@ -23,11 +23,23 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env*.local
-
-# vercel
-.vercel
+.env*
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# vercel
+.vercel
+
+# Reference uploads & scratch
+WhatsApp*
+*.txt
+*.html
+*.png
+extracted_frames/
+reference_assets/
+scratch/
+scripts/
+configured_heart_nodes.json
+relaxed_nodes*.json
