@@ -8,7 +8,6 @@ import { PixelTextEngine } from "@/lib/pixelTextEngine";
 import StarlightQuest from "@/components/game/StarlightQuest";
 import CosmicIntroduction from "@/components/intro/CosmicIntroduction";
 import ThreeHeartGalaxy from "./ThreeHeartGalaxy";
-import HeartQRCodeModal from "./HeartQRCodeModal";
 
 type SceneState =
   | "matrix-intro"
@@ -83,7 +82,6 @@ export default function AyaExperience({ isActive = true }: AyaExperienceProps) {
   const [flippingPageIndex, setFlippingPageIndex] = useState<number | null>(null);
   const [displayedText, setDisplayedText] = useState("");
   const [showContentCard, setShowContentCard] = useState(false);
-  const [showQRModal, setShowQRModal] = useState(false);
 
   // Background twinkling stars (matching aya-sigma-six showStars)
   const [stars, setStars] = useState<
@@ -725,30 +723,6 @@ export default function AyaExperience({ isActive = true }: AyaExperienceProps) {
       {currentScene === "3d-heart-galaxy" && (
         <ThreeHeartGalaxy />
       )}
-
-      {/* ========================================================= */}
-      {/* Floating Red Heart QR Code Portal Pill                    */}
-      {/* ========================================================= */}
-      <div className="fixed top-3 sm:top-4 right-3 sm:right-4 z-50 pointer-events-auto">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowQRModal(true);
-          }}
-          className="group px-3 py-1.5 rounded-full bg-black/85 hover:bg-red-950/90 border border-red-500/35 hover:border-red-500/80 text-red-300 hover:text-white text-[10px] sm:text-[11px] font-mono tracking-wider uppercase backdrop-blur-md shadow-[0_2px_15px_rgba(255,13,56,0.25)] transition-all duration-200 flex items-center gap-1.5 hover:scale-105 active:scale-95"
-          title="Open HER UNIVERSE Red Heart QR Code"
-        >
-          <span className="text-red-500 text-xs animate-pulse">❤️</span>
-          <span className="hidden sm:inline">Heart QR Code</span>
-          <span className="sm:hidden font-semibold">QR</span>
-        </button>
-      </div>
-
-      {/* Interactive Red Heart QR Code Modal */}
-      <HeartQRCodeModal
-        isOpen={showQRModal}
-        onClose={() => setShowQRModal(false)}
-      />
     </div>
   );
 }
