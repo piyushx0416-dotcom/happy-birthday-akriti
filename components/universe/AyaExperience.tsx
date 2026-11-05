@@ -44,7 +44,7 @@ const BOOK_PHYSICAL_PAGES: PhysicalPageData[] = [
   },
   {
     id: 2,
-    frontImage: "/assets/akriti/photo-04.jpg", // Inside Right Page 2
+    frontImage: "/assets/akriti/card-photo-04.jpg", // Inside Right Page 2 (Portrait in Striped Top - Zoomed Out)
     frontAlt: "Akriti - Beautiful Smile",
     backImage: "/assets/aya/theend.jpg", // Cute back cover (hands holding heart) from the video
     backAlt: "Forever and Always ❤️",
