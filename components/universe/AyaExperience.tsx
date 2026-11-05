@@ -57,13 +57,15 @@ const BOOK_SPREAD_MESSAGES: Record<number, string> = {
   2: "As long as you’re smiling, I’m happy. Stay happy, my love.",
 };
 
-// Authentic 5 real photographs of Akriti for the Grand Cardioid Heart Collage
+// Authentic 7 real photographs of Akriti for the Grand Cardioid Heart Collage
 const HEART_COLLAGE_IMAGES: string[] = [
   "/assets/akriti/heart-photo-01.jpg", // Yellow ruffled dress portrait
   "/assets/akriti/heart-photo-02.jpg", // Pink earmuffs with alien stickers selfie
   "/assets/akriti/heart-photo-03.jpg", // Yellow floral dress by the lakeside
   "/assets/akriti/heart-photo-04.jpg", // Colorful patterned top with nose stud portrait
   "/assets/akriti/heart-photo-05.jpg", // Pink floral top close selfie
+  "/assets/akriti/heart-photo-06.jpg", // White sunglasses on head smiling selfie
+  "/assets/akriti/heart-photo-07.jpg", // Elegant green striped sari portrait
 ];
 
 interface AyaExperienceProps {
@@ -407,7 +409,7 @@ export default function AyaExperience({ isActive = true }: AyaExperienceProps) {
   useEffect(() => {
     if (currentScene !== "heart-collage") return;
 
-    const totalPoints = 30;
+    const totalPoints = 28; // Evenly distributes all 7 photos (4 of each) symmetrically around the cardioid heart
     const photos = [];
     const scale = window.innerWidth < 768 ? 9 : 16;
     for (let i = 0; i < totalPoints; i++) {
