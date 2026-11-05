@@ -57,6 +57,15 @@ const BOOK_SPREAD_MESSAGES: Record<number, string> = {
   2: "As long as you’re smiling, I’m happy. Stay happy, my love.",
 };
 
+// Authentic 5 real photographs of Akriti for the Grand Cardioid Heart Collage
+const HEART_COLLAGE_IMAGES: string[] = [
+  "/assets/akriti/heart-photo-01.jpg", // Yellow ruffled dress portrait
+  "/assets/akriti/heart-photo-02.jpg", // Pink earmuffs with alien stickers selfie
+  "/assets/akriti/heart-photo-03.jpg", // Yellow floral dress by the lakeside
+  "/assets/akriti/heart-photo-04.jpg", // Colorful patterned top with nose stud portrait
+  "/assets/akriti/heart-photo-05.jpg", // Pink floral top close selfie
+];
+
 interface AyaExperienceProps {
   isActive?: boolean;
 }
@@ -405,11 +414,10 @@ export default function AyaExperience({ isActive = true }: AyaExperienceProps) {
       const t = (i / totalPoints) * Math.PI * 2;
       const x = 16 * Math.pow(Math.sin(t), 3) * scale;
       const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * scale;
-      const photoIndex = (i % 12) + 1;
-      const padded = photoIndex < 10 ? `0${photoIndex}` : `${photoIndex}`;
+      const imageSrc = HEART_COLLAGE_IMAGES[i % HEART_COLLAGE_IMAGES.length];
       photos.push({
         id: i,
-        src: `/assets/akriti/photo-${padded}.jpg`,
+        src: imageSrc,
         targetX: x,
         targetY: y,
         visible: false,
@@ -673,14 +681,14 @@ export default function AyaExperience({ isActive = true }: AyaExperienceProps) {
               onClick={() => setSelectedPhoto(null)}
               className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer"
             >
-              <div className="relative max-w-lg w-full max-h-[80vh] aspect-[3/4] rounded-2xl overflow-hidden border-4 border-white shadow-[0_0_50px_rgba(255,61,145,0.8)]">
+              <div className="relative max-w-xl w-full max-h-[85vh] h-[75vh] rounded-2xl overflow-hidden border-4 border-white shadow-[0_0_50px_rgba(255,61,145,0.8)] bg-black/95 p-2 flex items-center justify-center">
                 <Image
                   src={selectedPhoto}
                   alt="Akriti full view"
                   fill
                   quality={100}
                   priority
-                  className="object-cover"
+                  className="object-contain"
                   sizes="(max-width: 768px) 95vw, 800px"
                 />
               </div>
