@@ -30,11 +30,12 @@ class BackgroundSoundtrack {
     (audio as any).playsInline = true;
     this.audio = audio;
 
-    audio.addEventListener("play", () => this.notifyListeners(true));
+    audio.addEventListener("play", () => this.notifyListeners(this.isPlaying()));
     audio.addEventListener("pause", () => this.notifyListeners(false));
-    audio.addEventListener("playing", () => this.notifyListeners(true));
+    audio.addEventListener("playing", () => this.notifyListeners(this.isPlaying()));
+    audio.addEventListener("volumechange", () => this.notifyListeners(this.isPlaying()));
     audio.addEventListener("ended", () => {
-      // Ensure continuous looping
+      // Ensure continuous seamless looping
       audio?.play().catch(() => {});
     });
 
@@ -50,24 +51,23 @@ class BackgroundSoundtrack {
 
     // Try unmuted playback first
     this.audio.muted = false;
+    this.audio.volume = 0.75;
     const playPromise = this.audio.play();
 
     if (playPromise !== undefined) {
-      playPromise.catch(() => {
-        // Unmuted autoplay was blocked by browser policy.
-        // Fall back to muted autoplay to start the audio pipeline, then unmute on first gesture.
-        if (this.audio) {
-          this.audio.muted = true;
-          this.audio
-            .play()
-            .then(() => {
-              this.notifyListeners(false); // Muted, so treat as waiting for audible activation
-            })
-            .catch(() => {
-              // Both blocked, gesture unlock will start it on first touch
-            });
-        }
-      });
+      playPromise
+        .then(() => {
+          this.notifyListeners(true);
+        })
+        .catch(() => {
+          // Unmuted autoplay blocked by browser policy.
+          // Fall back to muted playback to keep buffer hot, waiting for first gesture to unmute.
+          if (this.audio) {
+            this.audio.muted = true;
+            this.audio.play().catch(() => {});
+          }
+          this.notifyListeners(false);
+        });
     }
   }
 
@@ -89,30 +89,30 @@ class BackgroundSoundtrack {
         }
       } catch {}
 
-      // 2. Unmute and start HTML5 Audio
+      // 2. Unmute and play HTML5 Audio
       if (this.audio) {
         this.audio.muted = false;
         this.audio.volume = 0.75;
-        if (this.audio.paused) {
-          this.audio.play().then(() => {
+        this.audio
+          .play()
+          .then(() => {
             this.notifyListeners(true);
             this.removeGestureUnlock(unlock);
-          }).catch(() => {});
-        } else {
-          // Already playing (was muted) -> now unmuted
-          this.notifyListeners(true);
-          this.removeGestureUnlock(unlock);
-        }
+          })
+          .catch(() => {
+            // Keep gesture listeners attached so next tap/click retries
+          });
       }
     };
 
     const events = [
-      "pointerdown",
       "touchstart",
       "touchend",
+      "click",
+      "pointerdown",
+      "pointerup",
       "mousedown",
       "mouseup",
-      "click",
       "keydown",
       "wheel",
       "scroll",
@@ -127,12 +127,13 @@ class BackgroundSoundtrack {
   private removeGestureUnlock(handler: () => void) {
     if (typeof window === "undefined") return;
     const events = [
-      "pointerdown",
       "touchstart",
       "touchend",
+      "click",
+      "pointerdown",
+      "pointerup",
       "mousedown",
       "mouseup",
-      "click",
       "keydown",
       "wheel",
       "scroll",
@@ -141,15 +142,20 @@ class BackgroundSoundtrack {
       window.removeEventListener(evt, handler, { capture: true } as any);
       document.removeEventListener(evt, handler, { capture: true } as any);
     });
+    this.gestureListenersAttached = false;
   }
 
   public play() {
     this.init();
     if (this.audio) {
       this.audio.muted = false;
-      if (this.audio.paused) {
-        this.audio.play().catch(() => {});
-      }
+      this.audio.volume = 0.75;
+      this.audio
+        .play()
+        .then(() => {
+          this.notifyListeners(true);
+        })
+        .catch(() => {});
     }
   }
 
@@ -172,7 +178,7 @@ class BackgroundSoundtrack {
   }
 
   public isPlaying(): boolean {
-    return this.audio ? !this.audio.paused && !this.audio.muted : false;
+    return this.audio ? !this.audio.paused && !this.audio.muted && this.audio.volume > 0 : false;
   }
 
   public subscribe(listener: AudioListener): () => void {

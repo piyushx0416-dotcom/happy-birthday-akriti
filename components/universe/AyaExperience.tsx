@@ -466,7 +466,10 @@ export default function AyaExperience({ isActive = true }: AyaExperienceProps) {
       {currentScene === "matrix-intro" && (
         <div
           onClick={() => playAudio()}
-          className="relative w-full h-screen z-10 flex flex-col items-center justify-center overflow-hidden cursor-default"
+          onTouchStart={() => playAudio()}
+          onTouchEnd={() => playAudio()}
+          onPointerDown={() => playAudio()}
+          className="relative w-full h-screen z-10 flex flex-col items-center justify-center overflow-hidden cursor-pointer select-none"
         >
           {/* Falling Matrix Characters Canvas */}
           <canvas
@@ -482,10 +485,19 @@ export default function AyaExperience({ isActive = true }: AyaExperienceProps) {
 
           {/* Elegant hint shown only if browser policy is holding sound until first tap */}
           {!isPlayingAudio && (
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 pointer-events-none animate-pulse">
-              <span className="text-[11px] font-mono tracking-widest uppercase text-[#FFB6D9]/80 bg-black/70 px-4 py-1.5 rounded-full border border-[#FF3D91]/30 backdrop-blur-sm">
-                ✦ Tap anywhere to enable sound ♫
-              </span>
+            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 pointer-events-auto animate-bounce">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  playAudio();
+                }}
+                className="px-5 py-2 rounded-full bg-black/85 border border-[#FF3D91] text-white shadow-[0_0_25px_rgba(255,61,145,0.8)] backdrop-blur-md flex items-center gap-2 cursor-pointer hover:scale-105 active:scale-95 transition-all"
+              >
+                <span className="text-base animate-pulse">🎵</span>
+                <span className="font-serif italic text-xs sm:text-sm text-[#FFB6D9] tracking-wide">
+                  Tap anywhere to play song ✨
+                </span>
+              </button>
             </div>
           )}
         </div>
