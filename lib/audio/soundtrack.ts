@@ -1,6 +1,6 @@
 /**
  * Background Audio Engine: One of the Girls (with JENNIE & Lily-Rose Depp) - The Weeknd
- * High-reliability autoplay engine supporting modern Web Audio API and HTML5 Audio fallback.
+ * Zero-UI automatic background music engine.
  */
 
 type AudioListener = (isPlaying: boolean) => void;
@@ -10,13 +10,13 @@ class BackgroundSoundtrack {
   private audioCtx: AudioContext | null = null;
   private isInitialized: boolean = false;
   private listeners: Set<AudioListener> = new Set();
-  private gestureListenersAttached: boolean = false;
+  private retryTimer: ReturnType<typeof setInterval> | null = null;
 
   public init() {
     if (this.isInitialized || typeof window === "undefined") return;
     this.isInitialized = true;
 
-    // 1. Reuse existing DOM audio element or create new
+    // 1. Locate existing DOM element or create new audio element
     let audio = document.getElementById("her-universe-soundtrack") as HTMLAudioElement | null;
     if (!audio) {
       audio = new Audio("/assets/music/one-of-the-girls.mp3");
@@ -24,138 +24,108 @@ class BackgroundSoundtrack {
     }
 
     audio.loop = true;
-    audio.volume = 0.75;
+    audio.volume = 0.85;
     audio.preload = "auto";
     audio.setAttribute("playsinline", "true");
     (audio as any).playsInline = true;
     this.audio = audio;
 
-    audio.addEventListener("play", () => this.notifyListeners(this.isPlaying()));
+    audio.addEventListener("play", () => this.notifyListeners(true));
+    audio.addEventListener("playing", () => this.notifyListeners(true));
     audio.addEventListener("pause", () => this.notifyListeners(false));
-    audio.addEventListener("playing", () => this.notifyListeners(this.isPlaying()));
-    audio.addEventListener("volumechange", () => this.notifyListeners(this.isPlaying()));
     audio.addEventListener("ended", () => {
-      // Ensure continuous seamless looping
       audio?.play().catch(() => {});
     });
 
-    // 2. Attach comprehensive gesture listeners immediately
-    this.attachGestureUnlock();
-
-    // 3. Attempt immediate unmuted autoplay
-    this.attemptAutoplay();
-  }
-
-  private attemptAutoplay() {
-    if (!this.audio) return;
-
-    // Try unmuted playback first
-    this.audio.muted = false;
-    this.audio.volume = 0.75;
-    const playPromise = this.audio.play();
-
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          this.notifyListeners(true);
-        })
-        .catch(() => {
-          // Unmuted autoplay blocked by browser policy.
-          // Fall back to muted playback to keep buffer hot, waiting for first gesture to unmute.
-          if (this.audio) {
-            this.audio.muted = true;
-            this.audio.play().catch(() => {});
-          }
-          this.notifyListeners(false);
-        });
-    }
-  }
-
-  private attachGestureUnlock() {
-    if (this.gestureListenersAttached || typeof window === "undefined") return;
-    this.gestureListenersAttached = true;
-
-    const unlock = () => {
-      // 1. Resume AudioContext if suspended
-      try {
-        if (!this.audioCtx) {
-          const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-          if (AudioContextClass) {
-            this.audioCtx = new AudioContextClass();
-          }
-        }
-        if (this.audioCtx && this.audioCtx.state === "suspended") {
-          this.audioCtx.resume().catch(() => {});
-        }
-      } catch {}
-
-      // 2. Unmute and play HTML5 Audio
-      if (this.audio) {
-        this.audio.muted = false;
-        this.audio.volume = 0.75;
-        this.audio
-          .play()
-          .then(() => {
-            this.notifyListeners(true);
-            this.removeGestureUnlock(unlock);
-          })
-          .catch(() => {
-            // Keep gesture listeners attached so next tap/click retries
-          });
-      }
+    // 2. Attach global transparent event listeners across window and document
+    const triggerAudio = () => {
+      this.play();
     };
 
     const events = [
-      "touchstart",
-      "touchend",
-      "click",
       "pointerdown",
       "pointerup",
+      "pointermove",
+      "touchstart",
+      "touchend",
+      "touchmove",
       "mousedown",
       "mouseup",
+      "click",
       "keydown",
       "wheel",
       "scroll",
+      "focus",
+      "pageshow",
+      "visibilitychange",
     ];
 
     events.forEach((evt) => {
-      window.addEventListener(evt, unlock, { capture: true, passive: true });
-      document.addEventListener(evt, unlock, { capture: true, passive: true });
+      window.addEventListener(evt, triggerAudio, { capture: true, passive: true });
+      document.addEventListener(evt, triggerAudio, { capture: true, passive: true });
     });
-  }
 
-  private removeGestureUnlock(handler: () => void) {
-    if (typeof window === "undefined") return;
-    const events = [
-      "touchstart",
-      "touchend",
-      "click",
-      "pointerdown",
-      "pointerup",
-      "mousedown",
-      "mouseup",
-      "keydown",
-      "wheel",
-      "scroll",
-    ];
-    events.forEach((evt) => {
-      window.removeEventListener(evt, handler, { capture: true } as any);
-      document.removeEventListener(evt, handler, { capture: true } as any);
-    });
-    this.gestureListenersAttached = false;
+    // 3. Attempt immediate autoplay
+    this.play();
+
+    // 4. Background retry loop: continuously tries to start music until playing
+    let attempts = 0;
+    this.retryTimer = setInterval(() => {
+      attempts++;
+      if (this.audio && !this.audio.paused) {
+        if (this.retryTimer) {
+          clearInterval(this.retryTimer);
+          this.retryTimer = null;
+        }
+      } else {
+        this.play();
+      }
+      if (attempts > 50) {
+        if (this.retryTimer) {
+          clearInterval(this.retryTimer);
+          this.retryTimer = null;
+        }
+      }
+    }, 350);
   }
 
   public play() {
-    this.init();
-    if (this.audio) {
-      this.audio.muted = false;
-      this.audio.volume = 0.75;
-      this.audio
-        .play()
-        .then(() => {
+    if (!this.isInitialized) {
+      this.init();
+      return;
+    }
+
+    if (!this.audio) return;
+
+    // Resume AudioContext if suspended
+    try {
+      if (!this.audioCtx) {
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioContextClass) {
+          this.audioCtx = new AudioContextClass();
+        }
+      }
+      if (this.audioCtx && this.audioCtx.state === "suspended") {
+        this.audioCtx.resume().catch(() => {});
+      }
+    } catch {}
+
+    this.audio.muted = false;
+    this.audio.volume = 0.85;
+
+    if (this.audio.paused) {
+      const p = this.audio.play();
+      if (p !== undefined) {
+        p.then(() => {
           this.notifyListeners(true);
-        })
-        .catch(() => {});
+          if (this.retryTimer) {
+            clearInterval(this.retryTimer);
+            this.retryTimer = null;
+          }
+        }).catch(() => {
+          // Autoplay awaiting user interaction
+        });
+      }
     }
   }
 
@@ -168,7 +138,7 @@ class BackgroundSoundtrack {
   public toggle(): boolean {
     this.init();
     if (!this.audio) return false;
-    if (this.audio.paused || this.audio.muted) {
+    if (this.audio.paused) {
       this.play();
       return true;
     } else {
@@ -178,7 +148,7 @@ class BackgroundSoundtrack {
   }
 
   public isPlaying(): boolean {
-    return this.audio ? !this.audio.paused && !this.audio.muted && this.audio.volume > 0 : false;
+    return this.audio ? !this.audio.paused : false;
   }
 
   public subscribe(listener: AudioListener): () => void {
@@ -213,3 +183,12 @@ class BackgroundSoundtrack {
 export const backgroundMusic = new BackgroundSoundtrack();
 export const soundEngine = backgroundMusic;
 export const ambientSound = backgroundMusic;
+
+// Auto-initialize as early as possible in browser environment
+if (typeof window !== "undefined") {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => backgroundMusic.init(), { once: true });
+  } else {
+    backgroundMusic.init();
+  }
+}

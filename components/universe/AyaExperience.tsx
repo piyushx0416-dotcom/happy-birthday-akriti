@@ -64,11 +64,6 @@ interface AyaExperienceProps {
 export default function AyaExperience({ isActive = true }: AyaExperienceProps) {
   // Experience Navigation State
   const [currentScene, setCurrentScene] = useState<SceneState>("matrix-intro");
-  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
-
-  useEffect(() => {
-    return backgroundMusic.subscribe(setIsPlayingAudio);
-  }, []);
 
   // 3D Flippable Memory Book State
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -436,7 +431,12 @@ export default function AyaExperience({ isActive = true }: AyaExperienceProps) {
   }, [currentScene]);
 
   return (
-    <div className="relative w-full min-h-screen bg-black text-white overflow-hidden select-none font-sans">
+    <div
+      onClick={playAudio}
+      onTouchStart={playAudio}
+      onPointerDown={playAudio}
+      className="relative w-full min-h-screen bg-black text-white overflow-hidden select-none font-sans"
+    >
       {/* ========================================================= */}
       {/* PERSISTENT BACKGROUND STARFIELD                            */}
       {/* ========================================================= */}
@@ -466,10 +466,7 @@ export default function AyaExperience({ isActive = true }: AyaExperienceProps) {
       {currentScene === "matrix-intro" && (
         <div
           onClick={() => playAudio()}
-          onTouchStart={() => playAudio()}
-          onTouchEnd={() => playAudio()}
-          onPointerDown={() => playAudio()}
-          className="relative w-full h-screen z-10 flex flex-col items-center justify-center overflow-hidden cursor-pointer select-none"
+          className="relative w-full h-screen z-10 flex flex-col items-center justify-center overflow-hidden cursor-default"
         >
           {/* Falling Matrix Characters Canvas */}
           <canvas
@@ -482,24 +479,6 @@ export default function AyaExperience({ isActive = true }: AyaExperienceProps) {
             ref={pixelCanvasRef}
             className="absolute inset-0 w-full h-full pointer-events-none z-20"
           />
-
-          {/* Elegant hint shown only if browser policy is holding sound until first tap */}
-          {!isPlayingAudio && (
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 pointer-events-auto animate-bounce">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  playAudio();
-                }}
-                className="px-5 py-2 rounded-full bg-black/85 border border-[#FF3D91] text-white shadow-[0_0_25px_rgba(255,61,145,0.8)] backdrop-blur-md flex items-center gap-2 cursor-pointer hover:scale-105 active:scale-95 transition-all"
-              >
-                <span className="text-base animate-pulse">🎵</span>
-                <span className="font-serif italic text-xs sm:text-sm text-[#FFB6D9] tracking-wide">
-                  Tap anywhere to play song ✨
-                </span>
-              </button>
-            </div>
-          )}
         </div>
       )}
 
