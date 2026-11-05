@@ -1,124 +1,92 @@
 /**
  * Background Audio Engine: One of the Girls (with JENNIE & Lily-Rose Depp) - The Weeknd
- * Ultra-reliable HTML5 Audio singleton with browser autoplay policy handling.
+ * Zero-UI automatic background music engine.
  */
 
 type AudioListener = (isPlaying: boolean) => void;
 
 class BackgroundSoundtrack {
   private audio: HTMLAudioElement | null = null;
+  private audioCtx: AudioContext | null = null;
   private isInitialized: boolean = false;
-  private isAttemptingPlay: boolean = false;
   private listeners: Set<AudioListener> = new Set();
-  private gestureCleanup: (() => void) | null = null;
+  private retryTimer: ReturnType<typeof setInterval> | null = null;
 
-  public init(): HTMLAudioElement | null {
-    if (typeof window === "undefined") return null;
-
-    if (this.isInitialized && this.audio) {
-      return this.audio;
-    }
-
-    // 1. Reuse existing DOM audio element or create single instance
-    let el = document.getElementById("her-universe-soundtrack") as HTMLAudioElement | null;
-    if (!el) {
-      el = new Audio("/assets/music/one-of-the-girls.mp3");
-      el.id = "her-universe-soundtrack";
-      document.body.appendChild(el);
-    }
-
-    el.loop = true;
-    el.volume = 0.8;
-    el.preload = "auto";
-    el.setAttribute("playsinline", "true");
-    (el as any).playsInline = true;
-
-    this.audio = el;
+  public init() {
+    if (this.isInitialized || typeof window === "undefined") return;
     this.isInitialized = true;
 
-    // Synchronize state listeners
-    el.addEventListener("play", () => this.notifyListeners(true));
-    el.addEventListener("playing", () => this.notifyListeners(true));
-    el.addEventListener("pause", () => this.notifyListeners(false));
+    // 1. Locate existing DOM element or create new audio element
+    let audio = document.getElementById("her-universe-soundtrack") as HTMLAudioElement | null;
+    if (!audio) {
+      audio = new Audio("/assets/music/one-of-the-girls.mp3");
+      audio.id = "her-universe-soundtrack";
+    }
 
-    // Guarantee seamless looping across all platforms
-    el.addEventListener("ended", () => {
-      if (this.audio) {
-        this.audio.currentTime = 0;
-        this.audio.play().catch(() => {});
-      }
+    audio.loop = true;
+    audio.volume = 0.85;
+    audio.preload = "auto";
+    audio.setAttribute("playsinline", "true");
+    (audio as any).playsInline = true;
+    this.audio = audio;
+
+    audio.addEventListener("play", () => this.notifyListeners(true));
+    audio.addEventListener("playing", () => this.notifyListeners(true));
+    audio.addEventListener("pause", () => this.notifyListeners(false));
+    audio.addEventListener("ended", () => {
+      audio?.play().catch(() => {});
     });
 
-    // 2. Attempt immediate playback with sound as early as possible
-    this.attemptAutoplay();
-
-    return el;
-  }
-
-  private attemptAutoplay() {
-    if (!this.audio || this.isAttemptingPlay) return;
-
-    this.isAttemptingPlay = true;
-    this.audio.muted = false;
-    this.audio.volume = 0.8;
-
-    const playPromise = this.audio.play();
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          // Browser allowed autoplay with sound!
-          this.isAttemptingPlay = false;
-          this.notifyListeners(true);
-        })
-        .catch((_error) => {
-          // Browser blocked un-interacted autoplay (NotAllowedError).
-          // Register trusted one-time gesture listeners to start sound on first user touch/click.
-          this.isAttemptingPlay = false;
-          this.notifyListeners(false);
-          this.setupGestureUnlock();
-        });
-    } else {
-      this.isAttemptingPlay = false;
-    }
-  }
-
-  private setupGestureUnlock() {
-    if (this.gestureCleanup || typeof window === "undefined") return;
-
-    const unlockHandler = () => {
-      if (this.audio && this.audio.paused) {
-        this.audio.muted = false;
-        this.audio.volume = 0.8;
-        this.audio
-          .play()
-          .then(() => {
-            this.notifyListeners(true);
-            this.removeGestureUnlock();
-          })
-          .catch(() => {});
-      } else {
-        this.removeGestureUnlock();
-      }
+    // 2. Attach global transparent event listeners across window and document
+    const triggerAudio = () => {
+      this.play();
     };
 
-    const events = ["pointerdown", "touchstart", "touchend", "mousedown", "click", "keydown"];
+    const events = [
+      "pointerdown",
+      "pointerup",
+      "pointermove",
+      "touchstart",
+      "touchend",
+      "touchmove",
+      "mousedown",
+      "mouseup",
+      "click",
+      "keydown",
+      "wheel",
+      "scroll",
+      "focus",
+      "pageshow",
+      "visibilitychange",
+    ];
 
     events.forEach((evt) => {
-      window.addEventListener(evt, unlockHandler, { capture: true, passive: true });
+      window.addEventListener(evt, triggerAudio, { capture: true, passive: true });
+      document.addEventListener(evt, triggerAudio, { capture: true, passive: true });
     });
 
-    this.gestureCleanup = () => {
-      events.forEach((evt) => {
-        window.removeEventListener(evt, unlockHandler, { capture: true } as any);
-      });
-      this.gestureCleanup = null;
-    };
-  }
+    // 3. Attempt immediate autoplay
+    this.play();
 
-  private removeGestureUnlock() {
-    if (this.gestureCleanup) {
-      this.gestureCleanup();
-    }
+    // 4. Background retry loop: continuously tries to start music until playing
+    let attempts = 0;
+    this.retryTimer = setInterval(() => {
+      attempts++;
+      if (this.audio && !this.audio.paused) {
+        if (this.retryTimer) {
+          clearInterval(this.retryTimer);
+          this.retryTimer = null;
+        }
+      } else {
+        this.play();
+      }
+      if (attempts > 50) {
+        if (this.retryTimer) {
+          clearInterval(this.retryTimer);
+          this.retryTimer = null;
+        }
+      }
+    }, 350);
   }
 
   public play() {
@@ -126,16 +94,38 @@ class BackgroundSoundtrack {
       this.init();
       return;
     }
-    if (this.audio && this.audio.paused) {
-      this.audio.muted = false;
-      this.audio.volume = 0.8;
-      this.audio
-        .play()
-        .then(() => {
+
+    if (!this.audio) return;
+
+    // Resume AudioContext if suspended
+    try {
+      if (!this.audioCtx) {
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioContextClass) {
+          this.audioCtx = new AudioContextClass();
+        }
+      }
+      if (this.audioCtx && this.audioCtx.state === "suspended") {
+        this.audioCtx.resume().catch(() => {});
+      }
+    } catch {}
+
+    this.audio.muted = false;
+    this.audio.volume = 0.85;
+
+    if (this.audio.paused) {
+      const p = this.audio.play();
+      if (p !== undefined) {
+        p.then(() => {
           this.notifyListeners(true);
-          this.removeGestureUnlock();
-        })
-        .catch(() => {});
+          if (this.retryTimer) {
+            clearInterval(this.retryTimer);
+            this.retryTimer = null;
+          }
+        }).catch(() => {
+          // Autoplay awaiting user interaction
+        });
+      }
     }
   }
 
@@ -194,7 +184,7 @@ export const backgroundMusic = new BackgroundSoundtrack();
 export const soundEngine = backgroundMusic;
 export const ambientSound = backgroundMusic;
 
-// Auto-initialize immediately on DOM readiness
+// Auto-initialize as early as possible in browser environment
 if (typeof window !== "undefined") {
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => backgroundMusic.init(), { once: true });

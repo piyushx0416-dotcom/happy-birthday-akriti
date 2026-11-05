@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import SoundtrackController from "@/components/audio/SoundtrackController";
 
 export const viewport: Viewport = {
   themeColor: "#07050B",
@@ -35,8 +34,8 @@ export default function RootLayout({
           loop
           preload="auto"
           playsInline
+          autoPlay
         />
-        <SoundtrackController />
         {children}
       </body>
     </html>
