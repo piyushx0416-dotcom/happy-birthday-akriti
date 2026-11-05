@@ -9,6 +9,12 @@
     --pink: #FF3D91;
     --emerald: #10B981;
     --ivory: #F8F1E8;
+    --font-cormorant: 'Cormorant Garamond', Georgia, serif;
+    --font-dancing: 'Dancing Script', cursive;
+    --font-playfair: 'Playfair Display', Georgia, serif;
+    --font-cinzel: 'Cinzel', serif;
+    --font-space-grotesk: 'Space Grotesk', sans-serif;
+    --font-inter: 'Inter', sans-serif;
   }
 
   html {

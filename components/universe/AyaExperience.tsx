@@ -64,6 +64,11 @@ interface AyaExperienceProps {
 export default function AyaExperience({ isActive = true }: AyaExperienceProps) {
   // Experience Navigation State
   const [currentScene, setCurrentScene] = useState<SceneState>("matrix-intro");
+  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
+
+  useEffect(() => {
+    return backgroundMusic.subscribe(setIsPlayingAudio);
+  }, []);
 
   // 3D Flippable Memory Book State
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -460,8 +465,8 @@ export default function AyaExperience({ isActive = true }: AyaExperienceProps) {
       {/* ========================================================= */}
       {currentScene === "matrix-intro" && (
         <div
-          onClick={() => setCurrentScene("gift-reveal")}
-          className="relative w-full h-screen z-10 flex flex-col items-center justify-center overflow-hidden cursor-pointer"
+          onClick={() => playAudio()}
+          className="relative w-full h-screen z-10 flex flex-col items-center justify-center overflow-hidden cursor-default"
         >
           {/* Falling Matrix Characters Canvas */}
           <canvas
@@ -474,6 +479,15 @@ export default function AyaExperience({ isActive = true }: AyaExperienceProps) {
             ref={pixelCanvasRef}
             className="absolute inset-0 w-full h-full pointer-events-none z-20"
           />
+
+          {/* Elegant hint shown only if browser policy is holding sound until first tap */}
+          {!isPlayingAudio && (
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 pointer-events-none animate-pulse">
+              <span className="text-[11px] font-mono tracking-widest uppercase text-[#FFB6D9]/80 bg-black/70 px-4 py-1.5 rounded-full border border-[#FF3D91]/30 backdrop-blur-sm">
+                ✦ Tap anywhere to enable sound ♫
+              </span>
+            </div>
+          )}
         </div>
       )}
 

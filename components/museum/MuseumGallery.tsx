@@ -6,9 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Camera, ZoomIn, X, Sparkles, Calendar, Layers, Info } from "lucide-react";
 import Image from "next/image";
 
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-const resolveSrc = (s: string) => (s.startsWith("/") ? `${basePath}${s}` : s);
-
 export default function MuseumGallery() {
   const [activeCollectionId, setActiveCollectionId] = useState<string>("beginning");
   const [selectedExhibit, setSelectedExhibit] = useState<MuseumExhibit | null>(null);
@@ -97,7 +94,7 @@ export default function MuseumGallery() {
               {/* Exhibit Image Container */}
               <div className="relative aspect-[4/5] w-full bg-obsidian-900 overflow-hidden">
                 <img
-                  src={resolveSrc(exhibit.imageSrc)}
+                  src={exhibit.imageSrc}
                   alt={exhibit.title}
                   className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                 />
@@ -153,7 +150,7 @@ export default function MuseumGallery() {
               <div className="flex flex-col sm:flex-row gap-6 items-start">
                 <div className="w-full sm:w-48 aspect-square rounded-2xl overflow-hidden shrink-0 bg-obsidian-900 border border-gold-metallic/20">
                   <img
-                    src={resolveSrc(exhibit.imageSrc)}
+                    src={exhibit.imageSrc}
                     alt={exhibit.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                   />
@@ -201,7 +198,7 @@ export default function MuseumGallery() {
                 {/* Large Preview */}
                 <div className="md:col-span-7 rounded-2xl overflow-hidden border border-gold-metallic/30 bg-obsidian-900 shadow-xl">
                   <img
-                    src={resolveSrc(selectedExhibit.imageSrc)}
+                    src={selectedExhibit.imageSrc}
                     alt={selectedExhibit.title}
                     className="w-full h-auto max-h-[550px] object-contain mx-auto"
                   />
