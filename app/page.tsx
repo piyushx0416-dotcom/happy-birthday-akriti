@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
-import IglooUniverseExperience from "@/components/igloo/IglooUniverseExperience";
+import AyaExperience from "@/components/universe/AyaExperience";
 
 export default function HomePage() {
   return (
-    <main className="relative w-full min-h-screen bg-[#06070a] overflow-x-hidden">
-      <IglooUniverseExperience />
+    <main className="relative w-full min-h-screen bg-[#08080D] overflow-x-hidden">
+      <AyaExperience isActive={true} />
     </main>
   );
 }
