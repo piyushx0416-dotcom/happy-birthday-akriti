@@ -15,6 +15,9 @@ export default function IglooUniverseExperience() {
   const [memoryPositions, setMemoryPositions] = useState<
     Array<{ id: number; x: number; y: number; visible: boolean }>
   >([]);
+  const [blueprintMarkers, setBlueprintMarkers] = useState<
+    Array<{ id: string; num: string; x: number; y: number; visible: boolean }>
+  >([]);
 
   const lenisRef = useRef<Lenis | null>(null);
   const lastScrollY = useRef(0);
@@ -109,7 +112,7 @@ export default function IglooUniverseExperience() {
   };
 
   return (
-    <div className="relative w-full bg-[#06070a] text-white overflow-x-hidden min-h-[700vh]">
+    <div className="relative w-full bg-[#b2bfc9] text-white overflow-x-hidden min-h-[700vh]">
       {/* Three.js Full-Viewport WebGL Scene */}
       <IglooScene
         scrollProgress={scrollProgress}
@@ -118,6 +121,7 @@ export default function IglooUniverseExperience() {
         selectedMemory={selectedMemory}
         activeMorphIndex={activeMorphIndex}
         onUpdateScreenPositions={setMemoryPositions}
+        onUpdateBlueprintMarkers={setBlueprintMarkers}
       />
 
       {/* Cybernetic HUD & Telemetry Interface Layer */}
@@ -128,6 +132,7 @@ export default function IglooUniverseExperience() {
         onToggleAudio={toggleAudio}
         onJumpToProgress={jumpToProgress}
         memoryPositions={memoryPositions}
+        blueprintMarkers={blueprintMarkers}
         selectedMemory={selectedMemory}
         onSelectMemory={setSelectedMemory}
         activeMorphIndex={activeMorphIndex}

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import confetti from "canvas-confetti";
 import { useTextScramble } from "./useTextScramble";
 
@@ -12,6 +13,7 @@ interface IglooHUDProps {
   onToggleAudio: () => void;
   onJumpToProgress: (progress: number) => void;
   memoryPositions: Array<{ id: number; x: number; y: number; visible: boolean }>;
+  blueprintMarkers: Array<{ id: string; num: string; x: number; y: number; visible: boolean }>;
   selectedMemory: number | null;
   onSelectMemory: (id: number | null) => void;
   activeMorphIndex: number;
@@ -21,73 +23,73 @@ interface IglooHUDProps {
 const MEMORY_DATA = [
   {
     id: 0,
-    tag: "MEM_01",
-    title: "WARM LIGHT SMILE",
-    date: "06.NOV.2024",
-    location: "COSMIC COORDINATES 28.61°N, 77.20°E",
+    tag: "PORTFOLIO_CO_01",
+    title: "WARM LIGHT RADIANCE",
+    temp: "TEMP 30.15 / -01.03",
+    date: "D 06.11.2024",
     src: "/assets/akriti/heart-photo-01.jpg",
     caption: "The gentle warmth of your smile that brightens any room in an instant.",
   },
   {
     id: 1,
-    tag: "MEM_02",
-    title: "ALIEN EARMUFFS PLAYFUL SELFIE",
-    date: "WINTER ARCHIVE // 2024",
-    location: "SECTOR 04 // PLAYFUL REALM",
+    tag: "PORTFOLIO_CO_02",
+    title: "ALIEN EARMUFFS PLAYFUL",
+    temp: "TEMP 24.80 / -04.12",
+    date: "D 02.12.2024",
     src: "/assets/akriti/heart-photo-02.jpg",
     caption: "The effortless laughter and playful spirit that make you so uniquely wonderful.",
   },
   {
     id: 2,
-    tag: "MEM_03",
-    title: "FLORAL DRESS BY THE LAKESIDE",
-    date: "SUMMER EXPEDITION // 2023",
-    location: "LAKE TRANQUILLITY // SECTOR 02",
+    tag: "PORTFOLIO_CO_03",
+    title: "LAKESIDE TRANQUILITY",
+    temp: "TEMP 28.40 / +02.15",
+    date: "D 15.06.2023",
     src: "/assets/akriti/heart-photo-03.jpg",
     caption: "Graceful and radiant against the quiet waters, like a timeless portrait.",
   },
   {
     id: 3,
-    tag: "MEM_04",
-    title: "STRIPED TOP & NOSE STUD PORTRAIT",
-    date: "AUTUMN ARCHIVE // 2024",
-    location: "CELESTIAL STUDIOS // HARMONY",
+    tag: "PORTFOLIO_CO_04",
+    title: "STRIPED NOSE-STUD HARMONY",
+    temp: "TEMP 26.90 / -00.45",
+    date: "D 20.09.2024",
     src: "/assets/akriti/heart-photo-04.jpg",
     caption: "Elegance defined. Every glimpse of your expression holds quiet confidence.",
   },
   {
     id: 4,
-    tag: "MEM_05",
-    title: "SERENE FLORAL TOP PORTRAIT",
-    date: "SPRING ARCHIVE // 2024",
-    location: "SOLAR SANCTUARY // LIGHT",
+    tag: "PORTFOLIO_CO_05",
+    title: "SERENE FLORAL ENCHANTMENT",
+    temp: "TEMP 29.10 / +01.80",
+    date: "D 18.04.2024",
     src: "/assets/akriti/heart-photo-05.jpg",
     caption: "A gaze so sincere and captivating it halts the passage of time itself.",
   },
   {
     id: 5,
-    tag: "MEM_06",
-    title: "WHITE SUNGLASSES SUNNY SMILE",
-    date: "SUMMER SUNSHINE // 2024",
-    location: "AZURE SKYLINE // SECTOR 07",
+    tag: "PORTFOLIO_CO_06",
+    title: "SUNGLASSES SUMMER GLOW",
+    temp: "TEMP 32.50 / +04.20",
+    date: "D 11.07.2024",
     src: "/assets/akriti/heart-photo-06.jpg",
-    caption: "Carefree, glowing with sunshine, and bringing pure joy to everyone around you.",
+    caption: "Pure sunshine in human form. A memory woven from laughter and golden sunlight.",
   },
   {
     id: 6,
-    tag: "MEM_07",
-    title: "EMERALD STRIPED SARI MASTERPIECE",
-    date: "CELESTIAL VAULT // ICONIC",
-    location: "THE GRAND PAVILION // NOIR",
+    tag: "PORTFOLIO_CO_07",
+    title: "EMERALD SARI TIMELESSNESS",
+    temp: "TEMP 27.30 / -02.10",
+    date: "D 06.11.2023",
     src: "/assets/akriti/heart-photo-07.jpg",
-    caption: "Breathtaking traditional elegance. A vision of beauty that words cannot capture.",
+    caption: "Unmatched poise and elegance. A celebration of beauty, grace, and heritage.",
   },
 ];
 
-const MORPH_LABELS = [
-  { id: 0, title: "01 // BIRTHDAY CAKE & FLAME" },
-  { id: 1, title: "02 // 3D CELESTIAL HEART" },
-  { id: 2, title: "03 // AKRITI 19 CONSTELLATION" },
+const MORPH_SHAPES = [
+  { index: 0, label: "01 // PUDGY EARMUFFS" },
+  { index: 1, label: "02 // 3D CELESTIAL HEART" },
+  { index: 2, label: "03 // AKRITI 19 CONSTELLATION" },
 ];
 
 export default function IglooHUD({
@@ -97,184 +99,224 @@ export default function IglooHUD({
   onToggleAudio,
   onJumpToProgress,
   memoryPositions,
+  blueprintMarkers,
   selectedMemory,
   onSelectMemory,
   activeMorphIndex,
   onChangeMorph,
 }: IglooHUDProps) {
-  const [wishMade, setWishMade] = useState(false);
   const [showChapters, setShowChapters] = useState(false);
+  const [showWishModal, setShowWishModal] = useState(false);
 
-  // Determine current active sector
+  // Sector computation
   const currentSector = useMemo(() => {
-    if (scrollProgress <= 0.2) return { id: "01", name: "THE CORE ASSEMBLY", range: [0, 0.2] };
-    if (scrollProgress <= 0.38) return { id: "02", name: "APERTURE VORTEX DIVE", range: [0.2, 0.38] };
-    if (scrollProgress <= 0.6) return { id: "03", name: "CONCENTRIC CELESTIAL RINGS", range: [0.38, 0.6] };
-    if (scrollProgress <= 0.85) return { id: "04", name: "FLOATING MEMORY MONOLITHS", range: [0.6, 0.85] };
-    return { id: "05", name: "THE WISH PEDESTAL", range: [0.85, 1.0] };
+    if (scrollProgress < 0.2) return 1;
+    if (scrollProgress < 0.45) return 2;
+    if (scrollProgress < 0.65) return 3;
+    if (scrollProgress < 0.85) return 4;
+    return 5;
   }, [scrollProgress]);
 
-  // Scramble effect for headline
-  const headline = useMemo(() => {
-    if (scrollProgress <= 0.2) return "HER UNIVERSE // A CELESTIAL EXPEDITION";
-    if (scrollProgress <= 0.38) return "DIVING THROUGH THE APERTURE // 19 LIGHT YEARS";
-    if (scrollProgress <= 0.6) return "PLANETARY RINGS // COSMIC HARMONY";
-    if (scrollProgress <= 0.85) return "CRYSTAL MONOLITHS // CLICK ANY SHARD TO INSPECT";
-    return "THE WISH PEDESTAL // CELESTIAL FINALE";
-  }, [scrollProgress]);
+  // Sector titles with cipher scramble
+  const sectorTitleRaw = useMemo(() => {
+    switch (currentSector) {
+      case 1:
+        return "THE CORE ASSEMBLY";
+      case 2:
+        return "APERTURE VORTEX DIVE";
+      case 3:
+        return "CELESTIAL RINGS";
+      case 4:
+        return "CRYSTAL MONOLITHS // CLICK ANY SHARD TO EXPLORE";
+      case 5:
+        return "THE WISH PEDESTAL // CELESTIAL FINALE";
+      default:
+        return "THE CORE ASSEMBLY";
+    }
+  }, [currentSector]);
 
-  const scrambledHeadline = useTextScramble(headline, true);
+  const scrambledTitle = useTextScramble(sectorTitleRaw);
+
+  const selectedMemoryObj = useMemo(() => {
+    if (selectedMemory === null) return null;
+    return MEMORY_DATA.find((m) => m.id === selectedMemory) || null;
+  }, [selectedMemory]);
 
   const handleMakeWish = () => {
-    setWishMade(true);
     confetti({
-      particleCount: 150,
+      particleCount: 160,
       spread: 90,
-      origin: { y: 0.6 },
-      colors: ["#FF3D91", "#00F0FF", "#FFE600", "#FFFFFF", "#FF0D38"],
+      origin: { y: 0.65 },
+      colors: ["#a2dcff", "#00f0ff", "#ff3d91", "#ffffff", "#ffd700"],
     });
+    setShowWishModal(true);
   };
-
-  const selectedData = selectedMemory !== null ? MEMORY_DATA[selectedMemory] : null;
 
   return (
     <div className="fixed inset-0 pointer-events-none z-20 select-none font-mono text-[11px] sm:text-xs text-white">
-      {/* ========================================================= */}
-      {/* 1. TOP HEADER HUD (Telemetry, Coordinates, Audio, Chapters) */}
-      {/* ========================================================= */}
-      <header className="fixed top-0 left-0 right-0 p-3 sm:p-5 flex items-center justify-between z-30 bg-gradient-to-b from-[#06070a]/90 via-[#06070a]/40 to-transparent backdrop-blur-[2px]">
-        {/* Left: Identity & Live Engine Status */}
-        <div className="flex items-center gap-2.5 sm:gap-4 pointer-events-auto">
-          <div className="flex items-center gap-2 font-medium tracking-widest text-[#a2dcff]">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>AKRITI SINGH</span>
-            <span className="text-white/40">//</span>
-            <span className="text-white/80">06.NOV.2026</span>
-          </div>
-
-          <div className="hidden md:inline-flex items-center gap-1.5 px-2 py-0.5 rounded border border-white/10 bg-white/5 text-[10px] text-white/50 tracking-wider">
-            <span>SECTOR [{currentSector.id}]</span>
-          </div>
-        </div>
-
-        {/* Center: Live Sector Readout */}
-        <div className="hidden lg:flex items-center gap-2 tracking-widest text-white/70">
-          <span className="text-[#a2dcff] font-bold">[</span>
-          <span className="text-white/90">{currentSector.name}</span>
-          <span className="text-[#a2dcff] font-bold">]</span>
-        </div>
-
-        {/* Right: Audio Visualizer & Chapters Button */}
-        <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto">
-          <button
-            onClick={onToggleAudio}
-            className="flex items-center gap-2 px-2.5 sm:px-3 py-1 rounded border border-white/15 bg-black/60 hover:bg-white/10 text-white/80 hover:text-white transition-all duration-200"
-            title="Toggle Soundtrack"
-          >
-            {/* 3-bar animated audio equalizer */}
-            <div className="flex items-end gap-0.5 h-3">
-              <span
-                className={`w-0.5 bg-[#a2dcff] rounded-full transition-all duration-200 ${
-                  isPlayingAudio ? "h-3 animate-pulse" : "h-1"
-                }`}
-              />
-              <span
-                className={`w-0.5 bg-[#a2dcff] rounded-full transition-all duration-200 ${
-                  isPlayingAudio ? "h-2 animate-bounce" : "h-1"
-                }`}
-              />
-              <span
-                className={`w-0.5 bg-[#a2dcff] rounded-full transition-all duration-200 ${
-                  isPlayingAudio ? "h-3 animate-pulse" : "h-1"
-                }`}
-              />
-            </div>
-            <span className="tracking-widest text-[10px]">AUDIO: {isPlayingAudio ? "ON" : "OFF"}</span>
-          </button>
-
-          <button
-            onClick={() => setShowChapters(!showChapters)}
-            className="px-2.5 sm:px-3 py-1 rounded border border-[#a2dcff]/40 bg-[#a2dcff]/10 hover:bg-[#a2dcff]/20 text-[#a2dcff] transition-all duration-200 tracking-widest text-[10px]"
-          >
-            [ CHAPTERS ]
-          </button>
-        </div>
-      </header>
-
-      {/* Chapters Quick-Jump Dropdown Menu */}
-      {showChapters && (
-        <div className="fixed top-14 right-4 sm:right-6 z-40 bg-[#080b11]/95 border border-white/15 rounded-xl p-3 shadow-2xl backdrop-blur-xl pointer-events-auto space-y-1.5 min-w-[240px]">
-          <div className="text-[10px] text-white/40 tracking-widest pb-1 border-b border-white/10">
-            JUMP TO SECTOR:
-          </div>
-          {[
-            { id: 0.05, name: "01 // THE CORE ASSEMBLY" },
-            { id: 0.28, name: "02 // APERTURE VORTEX DIVE" },
-            { id: 0.48, name: "03 // CELESTIAL RINGS" },
-            { id: 0.72, name: "04 // MEMORY MONOLITHS" },
-            { id: 0.95, name: "05 // THE WISH PEDESTAL" },
-          ].map((ch) => (
-            <button
-              key={ch.id}
-              onClick={() => {
-                onJumpToProgress(ch.id);
-                setShowChapters(false);
-              }}
-              className="w-full text-left px-2.5 py-1.5 rounded hover:bg-white/10 text-white/80 hover:text-white tracking-wider text-[11px] transition-colors"
-            >
-              {ch.name}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* ========================================================= */}
-      {/* 2. SIDE TELEMETRY (Left Coordinates, Right Progress Gauge) */}
-      {/* ========================================================= */}
-      {/* Left Telemetry */}
-      <div className="hidden sm:flex fixed left-4 sm:left-6 top-1/2 -translate-y-1/2 flex-col gap-3 text-[10px] text-white/40 tracking-widest">
-        <div>
-          <span className="text-white/20 block">VELOCITY</span>
-          <span className="text-white/80 font-bold font-mono">
-            {(scrollVelocity * 4.2).toFixed(2)} KM/S
+      {/* ============================================================ */}
+      {/* 1. TOP-LEFT: IGLOO-STYLE PILL LOGO & COPYRIGHT METADATA      */}
+      {/* ============================================================ */}
+      <div className="fixed top-5 sm:top-8 left-5 sm:left-10 pointer-events-auto flex flex-col gap-2 z-30">
+        {/* Chunky Rounded Pill Logo matching igloo.inc */}
+        <div className="flex items-center tracking-tighter select-none">
+          <span className="font-sans font-black text-3xl sm:text-4xl text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)]">
+            AKRITI
           </span>
         </div>
-        <div>
-          <span className="text-white/20 block">COORDINATES</span>
-          <span className="text-white/70">28.61° N, 77.20° E</span>
-        </div>
-        <div>
-          <span className="text-white/20 block">ALTITUDE</span>
-          <span className="text-white/70">
-            {(19.0 - scrollProgress * 19.0).toFixed(2)} LY
-          </span>
+
+        {/* Minimalist Monospace Metadata */}
+        <div className="text-[10px] sm:text-[11px] text-white/80 leading-relaxed font-mono">
+          <p className="text-white/50">// Copyright © 2026</p>
+          <p className="font-semibold text-white">Her Universe, Inc.</p>
+          <p className="text-white/50">All Rights Reserved.</p>
         </div>
       </div>
 
-      {/* Right Progress Rail (Matching igloo.inc progress meter) */}
-      <div className="fixed right-3 sm:right-6 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 pointer-events-auto">
-        <span className="text-[10px] font-mono font-semibold tracking-wider text-[#a2dcff]">
+      {/* ============================================================ */}
+      {/* 2. TOP-RIGHT: ////// MANIFESTO (EXACT IGLOO.INC STYLE)       */}
+      {/* ============================================================ */}
+      <div className="fixed top-5 sm:top-8 right-5 sm:right-10 pointer-events-auto flex flex-col items-end gap-1.5 text-right z-30 max-w-[280px] sm:max-w-[340px]">
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-mono tracking-widest text-white/60">//////</span>
+          <span className="text-xs font-mono font-bold tracking-wider text-white">Manifesto</span>
+        </div>
+        <p className="text-[10px] sm:text-[11px] text-white/85 leading-relaxed font-mono tracking-normal">
+          Our mission is to celebrate the most extraordinary soul, building an eternal universe at the intersection of
+          beauty, stardust, and love.
+        </p>
+
+        {/* Chapters Dropdown Trigger */}
+        <button
+          onClick={() => setShowChapters((prev) => !prev)}
+          className="mt-1 px-3 py-1 rounded border border-white/25 bg-black/40 hover:bg-white/10 text-white/90 hover:text-white transition-all text-[10px] tracking-widest"
+        >
+          [ {showChapters ? "CLOSE" : "CHAPTERS"} ]
+        </button>
+
+        {/* Chapters Menu Overlay */}
+        {showChapters && (
+          <div className="mt-2 w-64 p-3 rounded-lg border border-white/20 bg-black/85 backdrop-blur-md shadow-2xl flex flex-col gap-2 pointer-events-auto text-left">
+            <span className="text-[9px] uppercase tracking-widest text-white/40">Jump to Sector:</span>
+            {[
+              { id: 1, label: "01 // THE CORE ASSEMBLY", prog: 0.05 },
+              { id: 2, label: "02 // APERTURE VORTEX DIVE", prog: 0.28 },
+              { id: 3, label: "03 // CELESTIAL RINGS", prog: 0.52 },
+              { id: 4, label: "04 // MEMORY MONOLITHS", prog: 0.72 },
+              { id: 5, label: "05 // THE WISH PEDESTAL", prog: 0.95 },
+            ].map((sec) => (
+              <button
+                key={sec.id}
+                onClick={() => {
+                  onJumpToProgress(sec.prog);
+                  setShowChapters(false);
+                }}
+                className={`text-left px-2 py-1.5 rounded transition-all text-[10px] tracking-wider ${
+                  currentSector === sec.id
+                    ? "bg-white/20 text-white font-bold"
+                    : "text-white/60 hover:text-white hover:bg-white/10"
+                }`}
+              >
+                {sec.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ============================================================ */}
+      {/* 3. CENTER / OVERLAY: 3D BLUEPRINT CONSTELLATION MARKERS     */}
+      {/* ============================================================ */}
+      {blueprintMarkers.map((marker) => {
+        if (!marker.visible) return null;
+        return (
+          <div
+            key={marker.id}
+            style={{
+              position: "absolute",
+              left: `${marker.x}px`,
+              top: `${marker.y}px`,
+              transform: "translate(-50%, -50%)",
+            }}
+            className="pointer-events-none transition-opacity duration-300 z-10 flex items-center gap-1 font-mono text-[9px] text-white select-none drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]"
+          >
+            <span className="text-white text-xs font-bold leading-none">+</span>
+            <span className="text-white font-semibold">{marker.num}</span>
+          </div>
+        );
+      })}
+
+      {/* ============================================================ */}
+      {/* 4. BOTTOM-LEFT: SCROLL DOWN TO DISCOVER & SOUND TOGGLE       */}
+      {/* ============================================================ */}
+      <div className="fixed bottom-6 left-5 sm:left-10 pointer-events-auto flex flex-col gap-3.5 z-30">
+        {/* Scroll Prompt */}
+        <div className="text-[11px] sm:text-xs text-white font-mono leading-tight tracking-wider">
+          <p className="text-white/70">Scroll down to</p>
+          <p className="font-bold text-white">discover.</p>
+        </div>
+
+        {/* Sound Toggle (Matching igloo.inc speaker icon + Sound: Off/On) */}
+        <button
+          onClick={onToggleAudio}
+          className="flex items-center gap-2 text-white/85 hover:text-white transition-all text-[11px] font-mono tracking-wider cursor-pointer"
+          title="Toggle Soundtrack"
+        >
+          {isPlayingAudio ? (
+            <svg
+              className="w-4 h-4 text-white animate-pulse"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
+              />
+            </svg>
+          ) : (
+            <svg
+              className="w-4 h-4 text-white/60"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"
+              />
+            </svg>
+          )}
+          <span>Sound: {isPlayingAudio ? "On" : "Off"}</span>
+        </button>
+      </div>
+
+      {/* ============================================================ */}
+      {/* 5. RIGHT SIDE PROGRESS RAIL & TELEMETRY INDICATOR             */}
+      {/* ============================================================ */}
+      <div className="fixed right-3 sm:right-6 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 pointer-events-auto z-30">
+        <span className="text-[10px] font-mono font-semibold tracking-wider text-white">
           [{Math.round(scrollProgress * 100).toString().padStart(3, "0")}%]
         </span>
-
-        {/* Progress Bar with 5 Sector Ticks */}
-        <div className="relative w-1 h-36 sm:h-48 bg-white/10 rounded-full overflow-hidden">
+        <div className="relative w-1 h-36 sm:h-44 bg-white/20 rounded-full overflow-hidden">
           <div
-            className="absolute top-0 left-0 right-0 bg-gradient-to-b from-[#a2dcff] via-[#00f0ff] to-[#ff3d91] rounded-full transition-all duration-100"
+            className="absolute top-0 left-0 right-0 bg-white rounded-full transition-all duration-100"
             style={{ height: `${Math.round(scrollProgress * 100)}%` }}
           />
         </div>
-
-        {/* 5 Sector Ticks */}
         <div className="flex flex-col gap-2 pt-1">
-          {[0.05, 0.28, 0.48, 0.72, 0.95].map((pos, idx) => (
+          {[0.05, 0.28, 0.52, 0.72, 0.95].map((targetP, idx) => (
             <button
               key={idx}
-              onClick={() => onJumpToProgress(pos)}
+              onClick={() => onJumpToProgress(targetP)}
               className={`w-2 h-2 rounded-full border transition-all ${
-                Math.abs(scrollProgress - pos) < 0.12
-                  ? "bg-[#a2dcff] border-white scale-125"
-                  : "bg-transparent border-white/20 hover:border-white/60"
+                currentSector === idx + 1
+                  ? "bg-white border-white scale-125"
+                  : "bg-transparent border-white/30 hover:border-white/80"
               }`}
               title={`Jump to Sector ${idx + 1}`}
             />
@@ -282,201 +324,173 @@ export default function IglooHUD({
         </div>
       </div>
 
-      {/* ========================================================= */}
-      {/* 3. DYNAMIC SVG LEADER LINES FOR 3D MEMORY MONOLITHS        */}
-      {/* ========================================================= */}
-      <svg className="fixed inset-0 w-full h-full pointer-events-none z-10">
-        {memoryPositions.map((item) => {
-          if (!item.visible) return null;
-          const data = MEMORY_DATA[item.id];
-          const isLeft = item.x < window.innerWidth / 2;
-          const labelX = isLeft ? item.x - 70 : item.x + 70;
-          const labelY = item.y - 40;
+      {/* ============================================================ */}
+      {/* 6. BOTTOM BANNER: CURRENT SECTOR & CIPHER SCRAMBLE TITLE     */}
+      {/* ============================================================ */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 pointer-events-none text-center z-20 hidden md:block">
+        <div className="px-4 py-1.5 rounded-full bg-black/40 border border-white/15 text-white/80 text-[10px] tracking-widest flex items-center gap-2.5 backdrop-blur-md">
+          <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+          <span className="text-white font-semibold">{scrambledTitle}</span>
+          <span className="text-white/40">//</span>
+          <span className="text-white/60">SECTOR [0{currentSector}]</span>
+        </div>
+      </div>
 
-          return (
-            <g key={item.id} className="transition-opacity duration-300 opacity-90 hover:opacity-100">
-              {/* Leader Line */}
-              <polyline
-                points={`${item.x},${item.y} ${labelX},${labelY} ${isLeft ? labelX - 60 : labelX + 60},${labelY}`}
-                fill="none"
-                stroke="#00f0ff"
-                strokeWidth="1.2"
-                strokeDasharray="3 3"
-                className="opacity-60"
-              />
-              {/* Target Anchor Crosshair */}
-              <circle cx={item.x} cy={item.y} r="4" fill="none" stroke="#00f0ff" strokeWidth="1.5" />
-              <circle cx={item.x} cy={item.y} r="1.5" fill="#ffffff" />
-            </g>
-          );
-        })}
-      </svg>
-
-      {/* Floating Interactive Labels for 3D Monoliths */}
-      {memoryPositions.map((item) => {
-        if (!item.visible) return null;
-        const data = MEMORY_DATA[item.id];
-        const isLeft = item.x < window.innerWidth / 2;
-        const posX = isLeft ? item.x - 130 : item.x + 70;
-        const posY = item.y - 55;
+      {/* ============================================================ */}
+      {/* 7. SECTOR 4: OVERPASS-STYLE BLUEPRINT TELEMETRY LEADER LINES  */}
+      {/* ============================================================ */}
+      {memoryPositions.map((pos) => {
+        if (!pos.visible) return null;
+        const memory = MEMORY_DATA[pos.id];
+        if (!memory) return null;
 
         return (
           <div
-            key={item.id}
-            style={{ left: `${posX}px`, top: `${posY}px` }}
-            onClick={() => onSelectMemory(item.id)}
-            className="fixed z-20 pointer-events-auto cursor-pointer group px-2.5 py-1 rounded bg-[#06070a]/80 border border-[#00f0ff]/40 hover:border-[#00f0ff] hover:bg-[#00f0ff]/15 text-[#a2dcff] hover:text-white tracking-widest text-[10px] transition-all duration-200 backdrop-blur-md shadow-[0_0_15px_rgba(0,240,255,0.25)] flex items-center gap-1.5"
+            key={pos.id}
+            style={{
+              position: "absolute",
+              left: `${pos.x}px`,
+              top: `${pos.y}px`,
+              transform: "translate(-50%, -50%)",
+            }}
+            className="pointer-events-auto z-20 w-[240px] sm:w-[280px] h-[340px] sm:h-[380px] flex flex-col justify-between p-3 select-none"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#00f0ff] group-hover:animate-ping" />
-            <span>[{data.tag}]</span>
-            <span className="hidden sm:inline text-white/80">{data.title}</span>
+            {/* Top-Left Leader Line */}
+            <div className="flex flex-col items-start gap-0.5">
+              <span className="text-[9px] tracking-widest text-white/50">{memory.tag}</span>
+              <span className="text-[11px] font-bold tracking-wider text-white">{memory.title}</span>
+            </div>
+
+            {/* Top-Right Temp Metric */}
+            <div className="absolute top-3 right-3 text-right">
+              <span className="text-[9px] text-white/60 tracking-widest font-mono">{memory.temp}</span>
+            </div>
+
+            {/* Bottom-Right Click to Explore Link */}
+            <div className="flex flex-col items-end self-end">
+              <span className="text-[9px] text-white/50 tracking-wider">{memory.date}</span>
+              <button
+                onClick={() => onSelectMemory(pos.id)}
+                className="mt-1 px-2.5 py-1 rounded border border-white/40 bg-black/60 hover:bg-white hover:text-black text-white text-[10px] tracking-widest transition-all shadow-lg"
+              >
+                [ CLICK TO EXPLORE ]
+              </button>
+            </div>
           </div>
         );
       })}
 
-      {/* ========================================================= */}
-      {/* 4. SCRAMBLED HEADLINE OVERLAY                             */}
-      {/* ========================================================= */}
-      <div className="fixed bottom-12 sm:bottom-16 left-4 sm:left-8 max-w-lg z-20 pointer-events-none">
-        <div className="text-[10px] sm:text-xs text-[#a2dcff] font-bold tracking-widest drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-          {scrambledHeadline}
-        </div>
-      </div>
-
-      {/* ========================================================= */}
-      {/* 5. BOTTOM SCROLL CUE DOCK                                 */}
-      {/* ========================================================= */}
-      <div className="fixed bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 pointer-events-none">
-        <div className="px-3 py-1 rounded-full bg-black/60 border border-white/10 text-white/50 text-[10px] tracking-widest flex items-center gap-2 backdrop-blur-md">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#a2dcff] animate-ping" />
-          <span>{scrollProgress >= 0.95 ? "REACHED DESTINATION" : "SCROLL TO DIVE"}</span>
-          <span className="animate-bounce">↓</span>
-        </div>
-      </div>
-
-      {/* ========================================================= */}
-      {/* 6. PEDESTAL INTERACTIVE CONTROLS (Stage 5 Finale)         */}
-      {/* ========================================================= */}
-      {scrollProgress >= 0.85 && (
-        <div className="fixed bottom-16 sm:bottom-20 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-3 pointer-events-auto">
-          {/* Particle Morph Selector Buttons */}
-          <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-black/80 border border-white/15 backdrop-blur-xl shadow-2xl">
+      {/* ============================================================ */}
+      {/* 8. SECTOR 5: PEDESTAL INTERACTION & WISH SUPERNOVA BUTTON    */}
+      {/* ============================================================ */}
+      {currentSector === 5 && (
+        <div className="fixed bottom-14 left-1/2 -translate-x-1/2 pointer-events-auto flex flex-col items-center gap-3 z-30">
+          {/* Shape Morph Switcher */}
+          <div className="flex items-center gap-3 px-3 py-1.5 rounded-full bg-black/60 border border-white/20 backdrop-blur-md">
             <button
               onClick={() => onChangeMorph((activeMorphIndex + 2) % 3)}
-              className="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-white/70 hover:text-white transition-colors"
-              title="Previous 3D Form"
+              className="px-2 py-0.5 text-white/60 hover:text-white font-bold transition-all"
             >
               ←
             </button>
-            <span className="text-[10px] sm:text-xs font-mono text-[#a2dcff] tracking-widest px-2 min-w-[190px] text-center">
-              {MORPH_LABELS[activeMorphIndex].title}
+            <span className="text-[10px] tracking-widest text-white/90 min-w-[200px] text-center font-bold">
+              {MORPH_SHAPES[activeMorphIndex].label}
             </span>
             <button
               onClick={() => onChangeMorph((activeMorphIndex + 1) % 3)}
-              className="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-white/70 hover:text-white transition-colors"
-              title="Next 3D Form"
+              className="px-2 py-0.5 text-white/60 hover:text-white font-bold transition-all"
             >
               →
             </button>
           </div>
 
-          {/* Make A Wish Button */}
+          {/* Tribute Links (matching igloo.inc Medium / LinkedIn / X style) */}
+          <div className="flex items-center gap-4 text-[10px] text-white/60 tracking-wider">
+            <Link href="/story" className="hover:text-white transition-all underline underline-offset-4">
+              [ 365 Reasons ]
+            </Link>
+            <span>·</span>
+            <Link href="/creator-letter" className="hover:text-white transition-all underline underline-offset-4">
+              [ Creator Letter ]
+            </Link>
+            <span>·</span>
+            <Link href="/constellation" className="hover:text-white transition-all underline underline-offset-4">
+              [ Constellation ]
+            </Link>
+          </div>
+
+          {/* Make a Wish Button */}
           <button
             onClick={handleMakeWish}
-            className="group px-6 py-2.5 rounded-full bg-gradient-to-r from-[#ff0d38] via-[#ff3d91] to-[#00f0ff] text-white font-mono font-bold tracking-widest text-xs uppercase shadow-[0_0_30px_rgba(255,61,145,0.6)] hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-2"
+            className="px-6 py-2.5 rounded-full bg-white text-black font-bold tracking-widest text-xs hover:bg-[#a2dcff] hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,255,255,0.4)]"
           >
-            <span>✨</span>
-            <span>MAKE A BIRTHDAY WISH</span>
-            <span>✨</span>
+            ✨ MAKE A BIRTHDAY WISH ✨
           </button>
         </div>
       )}
 
-      {/* ========================================================= */}
-      {/* 7. MEMORY INSPECTION MODAL (When Shard is Tapped)          */}
-      {/* ========================================================= */}
-      {selectedData && (
-        <div
-          onClick={() => onSelectMemory(null)}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl pointer-events-auto cursor-pointer animate-fadeIn"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative max-w-md w-full bg-[#080b11] border border-[#00f0ff]/40 rounded-2xl p-5 shadow-[0_0_60px_rgba(0,240,255,0.25)] flex flex-col space-y-4"
-          >
-            {/* Header Telemetry */}
-            <div className="flex items-center justify-between pb-2 border-b border-white/10 text-[10px] text-white/40 tracking-widest">
-              <span className="text-[#00f0ff] font-bold">[{selectedData.tag}]</span>
-              <span>{selectedData.date}</span>
+      {/* ============================================================ */}
+      {/* 9. MEMORY DETAIL MODAL                                        */}
+      {/* ============================================================ */}
+      {selectedMemoryObj && (
+        <div className="fixed inset-0 z-50 pointer-events-auto flex items-center justify-center p-4 bg-black/80 backdrop-blur-lg">
+          <div className="relative max-w-lg w-full bg-[#101720] border border-white/20 rounded-xl overflow-hidden p-5 shadow-2xl flex flex-col gap-4">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div>
+                <span className="text-[10px] text-white/40 block">{selectedMemoryObj.tag}</span>
+                <h3 className="text-sm font-bold text-white tracking-wider">{selectedMemoryObj.title}</h3>
+              </div>
               <button
                 onClick={() => onSelectMemory(null)}
-                className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center"
+                className="px-2.5 py-1 rounded border border-white/20 text-white/60 hover:text-white hover:bg-white/10 text-[10px] tracking-widest transition-all"
               >
-                ✕
+                [ CLOSE ]
               </button>
             </div>
 
-            {/* Photo Preview */}
-            <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden border border-white/15 bg-black">
+            <div className="relative w-full h-80 rounded-lg overflow-hidden border border-white/10 bg-black/40">
               <Image
-                src={selectedData.src}
-                alt={selectedData.title}
+                src={selectedMemoryObj.src}
+                alt={selectedMemoryObj.title}
                 fill
-                quality={95}
-                className="object-cover"
-                sizes="(max-width: 768px) 90vw, 400px"
+                className="object-contain"
+                sizes="(max-width: 768px) 100vw, 500px"
               />
             </div>
 
-            {/* Caption & Location */}
-            <div className="space-y-1.5 pt-1">
-              <h3 className="text-sm font-serif text-white tracking-wide">{selectedData.title}</h3>
-              <p className="text-xs text-white/70 font-sans leading-relaxed">{selectedData.caption}</p>
-              <div className="text-[10px] text-[#a2dcff]/60 tracking-wider pt-2">
-                LAT/LONG: {selectedData.location}
-              </div>
+            <p className="text-xs text-white/80 leading-relaxed font-sans">{selectedMemoryObj.caption}</p>
+
+            <div className="flex items-center justify-between text-[10px] text-white/40 pt-2 border-t border-white/10 font-mono">
+              <span>{selectedMemoryObj.temp}</span>
+              <span>{selectedMemoryObj.date}</span>
             </div>
           </div>
         </div>
       )}
 
-      {/* ========================================================= */}
-      {/* 8. BIRTHDAY WISH CELEBRATION MODAL                        */}
-      {/* ========================================================= */}
-      {wishMade && (
-        <div
-          onClick={() => setWishMade(false)}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-2xl pointer-events-auto cursor-pointer animate-fadeIn"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative max-w-lg w-full bg-[#07050b] border border-[#ff3d91]/50 rounded-3xl p-6 sm:p-8 shadow-[0_0_80px_rgba(255,61,145,0.4)] text-center space-y-4"
-          >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ff3d91]/15 border border-[#ff3d91]/40 text-[#ff3d91] text-[10px] tracking-widest uppercase">
+      {/* ============================================================ */}
+      {/* 10. WISH CELEBRATION MODAL                                    */}
+      {/* ============================================================ */}
+      {showWishModal && (
+        <div className="fixed inset-0 z-50 pointer-events-auto flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl">
+          <div className="relative max-w-md w-full bg-[#0d151e] border border-white/30 rounded-2xl p-6 sm:p-8 text-center shadow-2xl flex flex-col items-center gap-4">
+            <span className="text-xs tracking-widest text-[#a2dcff] font-bold">
               ✨ WISH TRANSMITTED TO THE STARS ✨
-            </div>
-
-            <h2 className="text-2xl sm:text-3xl font-serif text-white tracking-wide">
+            </span>
+            <h2 className="text-xl sm:text-2xl font-bold text-white tracking-wide">
               Happy 19th Birthday, Akriti!
             </h2>
-
-            <p className="text-xs sm:text-sm text-white/80 font-sans leading-relaxed max-w-md mx-auto">
+            <p className="text-xs text-white/80 leading-relaxed font-sans">
               May every stardust grain in this universe carry your dreams to reality. May your 19th year be filled with
               boundless happiness, warmth, radiant beauty, and everything your heart desires.
             </p>
-
-            <div className="pt-2 text-xs font-serif italic text-[#ff9fcb]">
-              Forever in your universe, with all my love ❤️
-            </div>
-
-            <div className="pt-4">
-              <button
-                onClick={() => setWishMade(false)}
-                className="px-6 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs tracking-widest transition-colors"
-              >
-                [ RETURN TO ORBIT ]
-              </button>
-            </div>
+            <p className="text-xs text-white/60 italic font-serif">Forever in your universe, with all my love ❤️</p>
+            <button
+              onClick={() => setShowWishModal(false)}
+              className="mt-2 px-6 py-2 rounded-full border border-white/30 bg-white/10 hover:bg-white text-white hover:text-black text-xs font-bold tracking-widest transition-all"
+            >
+              [ RETURN TO ORBIT ]
+            </button>
           </div>
         </div>
       )}
